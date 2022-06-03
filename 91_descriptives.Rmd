@@ -3,10 +3,6 @@ title: "Luxembourg Research Evaluation 2022"
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
-    toc: yes
-    toc_depth: '3'
-    df_print: paged
   html_notebook:
     df_print: paged
     toc: yes
@@ -14,6 +10,10 @@ output:
     toc_float: yes
     number_sections: yes
     code_folding: hide
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -439,11 +439,11 @@ g_agg %E>%
 ## Technical description
 In a bibliographic coupling network, the **coupling-strength** between publications is determined by the number of commonly cited references they share, assuming a common pool of references to indicate similarity in context, methods, or theory. Formally, the strength of the relationship between a publication pair $i$ and $j$ ($s_{i,j}^{bib}$) is expressed by the number of commonly cited references. 
 
-$$	s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m} $$
+$$s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m}$$
 
 Since our corpus contains publications which differ strongly in terms of the number of cited references, we normalize the coupling strength by the Jaccard similarity coefficient. Here, we weight the intercept of two publications' bibliography (shared refeences) by their union (number of all references cited by either $i$ or $j$). It is bounded between zero and one, where one indicates the two publications to have an identical bibliography, and zero that they do not share any cited reference. Thereby, we prevent publications from having high coupling strength due to a large bibliography (e.g., literature surveys).
 
-$$	S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}} $$
+$$S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}}$$
 
 
 
@@ -483,20 +483,13 @@ rm(M_threefield)
 ```
 
 
-### Conceptual trajectories: Historical citation path analysis
 
-```{r}
-histResults <- readRDS(paste0('../temp/histResult_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
-```
 
 ```{r, fig.width=17.5, fig.height=17.5}
-histResults %>% histPlot(n =50, size = 10, labelsize = 7.5)
+### Conceptual trajectories: Historical citation path analysis
+#histResults <- readRDS(paste0('../temp/histResult_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+#histResults %>% histPlot(n =50, size = 10, labelsize = 7.5)
+#rm(histResults)
 ```
-
-
-```{r}
-rm(histResults)
-```
-
 
 
