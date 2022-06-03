@@ -1,0 +1,242 @@
+---
+title: "Luxembourg Bibliometric Evaluation: Prepare data"
+author: "Daniel S. Hain"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_notebook:
+    df_print: paged
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    number_sections: yes
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+### Generic preamble
+Sys.setenv(LANG = "en")
+options(scipen = 5)
+set.seed(1337)
+
+### Load packages  
+library(knitr) # For display of the markdown
+library(kableExtra) # For table styling
+
+library(tidyverse)
+library(magrittr)
+
+library(bibliometrix)
+library(tidygraph)
+
+# Dataviz
+library(DT)
+library(ggraph)
+
+# own functions
+source("functions/functions_basic.R")
+```
+
+# Load data
+
+## Main bibliographics
+
+```{r}
+# Load bibliographic data
+M <- convert2df(file = '../data/scopus_pub_lih_dii.bib', dbsource = "scopus", format = "bibtex")
+
+# Extract Meta Tags #TODO: Maybe more?
+M %<>% metaTagExtraction(Field = "AU_CO", aff.disamb = TRUE, sep = ";")
+M %<>% metaTagExtraction(Field = "AU1_CO", aff.disamb = TRUE, sep = ";")
+M %<>% metaTagExtraction(Field = "AU1_UN", aff.disamb = TRUE, sep = ";")
+M %<>% metaTagExtraction(Field = "SR", aff.disamb = TRUE, sep = ";")
+M %<>% metaTagExtraction(Field = "CR_AU", aff.disamb = TRUE, sep = ";")
+M %<>% metaTagExtraction(Field = "CR_SO", aff.disamb = TRUE, sep = ";")
+
+# create label
+M %<>% rownames_to_column('XX') %>% 
+  mutate(label = paste(str_extract(XX, pattern = ".*\\d{4}"), str_sub(TI, 1,25)) %>% str_replace_all("[^[:alnum:]]", " ") %>% str_squish() %>% str_replace_all(" ", "_") %>% make.unique(sep='_'))  
+
+# Number of cited references
+M %<>%
+  mutate(CR_n = CR %>% str_count(';')) %>%
+  filter(CR_n > 5)
+
+# Abstract
+M %<>%
+  filter(AB != '')
+
+# Setting rownames
+rownames(M) <- M$XX
+```
+
+## Cited references
+
+```{r}
+CR <- M %>% citations(field = "article", sep = ";")
+```
+
+
+## Biblio Network
+```{r}
+mat_bib <- M  %>% biblioNetwork(analysis = "coupling", network = "references", sep = ";", shortlabel =  FALSE)
+```
+
+```{r}
+g_bib <- mat_bib %>% igraph::graph_from_adjacency_matrix(mode = "undirected", weighted = TRUE, diag = FALSE) %>% 
+  igraph::simplify() %>%
+  as_tbl_graph(directed = FALSE) # %N>% left_join(M %>% select(XX, SR, PY, TC, J9), by = c("name" = "XX")) %>% mutate(id = 1:n()) 
+```
+
+```{r}
+# Restrict the network
+g_bib <- g_bib %N>% 
+  filter(!node_is_isolated()) %N>%
+  mutate(dgr = centrality_degree(weights = weight)) 
+```
+
+```{r}
+# Community Detection
+g_bib <- g_bib %N>%
+  mutate(com = group_louvain(weights = weight)) %>%
+  morph(to_split, com) %>% 
+  mutate(dgr_int = centrality_degree(weights = weight)) %N>%
+  unmorph()
+
+# Community size restriction
+g_bib <- g_bib %N>%
+  add_count(com, name = 'com_n') %>%
+  mutate(com = ifelse(com_n > 20, com, NA) ) %>%
+  select(-com_n)  
+```
+
+```{r}
+g_bib %N>%
+  as_tibble() %>%
+  count(com)
+```
+
+```{r}
+seed <- g_bib %N>%
+  as_tibble() %>%
+  drop_na %>%
+  group_by(com) %>%
+  slice_max(order_by = dgr_int, n = 1, with_ties = FALSE) %>%
+  left_join(M %>% select(XX, DI), by = c('name' = 'XX'))
+```
+
+```{r}
+seed %>% pull(DI) %>% paste('(', ., ')', collapse = ' OR DOI')
+```
+
+
+
+
+
+# Delete nodes withou community
+g_bib <- g_bib %N>%
+  filter(!is.na(com))
+
+# Update degree
+g_bib <- g_bib %N>%
+  mutate(dgr = centrality_degree(weights = weight))
+
+
+
+
+
+
+
+
+# General Overview over EIST articles
+
+## Main Indicators: Publications, Authors, Countries
+
+```{r}
+results <- biblioAnalysis(M, sep = ";")
+```
+
+```{r}
+results %>% summary(k = 10, pause = FALSE)
+```
+
+```{r}
+results %>% plot(k = 10, pause = FALSE)
+```
+
+```{r}
+prod_AU <- M %>% authorProdOverTime(k = 10, graph = TRUE)
+#plot(prod_AU$graph)
+```
+
+# Cited references
+
+
+
+```{r}
+CR$Cited %>% as_tibble() %>% head(100) %>% 
+    datatable(rownames = FALSE, options = list(pageLength = 10),
+            caption = 'Top Neuroscience applicants by country') 
+```
+
+# Author collaboration
+
+```{r}
+
+```
+
+
+
+# Bibliographic network:
+
+```{r}
+mat_bib %>% networkStat(stat = 'all', type = 'eigenvector') %>% summary()
+```
+
+
+
+
+
+
+
+
+# Additional analysis
+
+## Authors, Themes & Journals
+
+```{r, fig.width=20, fig.height=17.5}
+M_threefield <- M %>% as.data.frame() %>% threeFieldsPlot(n = c(20, 20, 10))
+```
+
+```{r, fig.width=17.5, fig.height=17.5}
+M_threefield
+```
+## Thematic Evolution
+
+```{r}
+M_them_evo <- M %>% thematicEvolution(years = c(2016, 2021))
+```
+
+# Keyword network
+
+```{r, fig.width=17.5, fig.height=10}
+M %>% biblioNetwork(analysis = "co-occurrences", network = "keywords", sep = ";") %>%
+  networkPlot(normalize="association", weighted=T, n = 30, Title = "Keyword Co-occurrences", type = "fruchterman", size=T,edgesize = 5,labelsize=0.7)
+```
+
+# Author Network
+
+```{r, fig.width=17.5, fig.height=10}
+M %>% biblioNetwork(analysis = "collaboration",  network = "authors", sep = ";") %>%
+  networkPlot(n = 20, Title = "Author collaboration",type = "auto", size=10, size.cex=T, edgesize = 3,labelsize=0.6)
+```
+
+
+
+
+# Institutional Network
+
+```{r, fig.width=17.5, fig.height=10}
+M %>% biblioNetwork(analysis = "collaboration",  network = "universities", sep = ";") %>%
+  networkPlot(n = 30, Title = "Author collaboration",type = "auto", size=10, size.cex=T,edgesize = 3,labelsize=0.6)
+```
+

@@ -1,0 +1,66 @@
+---
+title: "Luxembourg Research Evaluation 2022"
+author: "Daniel S. Hain"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: no
+  html_notebook:
+    df_print: paged
+    toc: no
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+### Generic preamble
+rm(list=ls())
+Sys.setenv(LANG = "en")
+options(scipen = 5)
+set.seed(1337)
+
+### Load packages  
+library(knitr) # For display of the markdown
+library(kableExtra) # For table styling
+
+library(tidyverse)
+library(magrittr)
+```
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r, include=FALSE}
+var_inst<- 'LISER'
+var_dept <- 'UD'
+```
+
+
+```{r}
+data <- read_tsv('../data/scival_liser_ud.tsv')
+```
+
+
+
+
+```{r, include=FALSE}
+data <- read_tsv('../data/publications_liser.txt')
+colnames(data) <-colnames(data) %>% str_to_lower() %>% str_replace_all(' ', '_') %>% str_remove_all('[^[:alnum:]_]')
+
+data %<>% filter(year >= 2018, year <=2021) %>% 
+  mutate(doi = dois_digital_object_identifiers %>% str_remove('^.*doi.org/') %>% str_remove('^.*dx\\.') %>% str_remove(' ') %>% str_replace_all('%', '/')) %>%
+  left_join(read_csv2('../data/mapping_unit_liser.csv'), by = c('organisations_of_contributors' = 'unit_old')) %>%
+  mutate(unit_short = case_when(
+    unit == 'Urban Development & Mobility' ~ "UD",
+    unit == 'Living Conditions' ~ "LC",
+    unit == 'Labour Market' ~ "LM",
+    TRUE ~ "other")) %>% 
+  group_by(pure_id) %>%
+    arrange(pure_id, doi) %>%
+    fill(doi, .direction = 'downup') %>%
+  ungroup() %>%
+  distinct(pure_id, unit_short, .keep_all = TRUE) 
+
+```
