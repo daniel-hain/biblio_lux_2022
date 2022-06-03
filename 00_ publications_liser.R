@@ -21,7 +21,8 @@ library(tidygraph)
 
 data_org <- read_tsv('../data/publications_liser.txt')
 colnames(data_org) <-colnames(data_org) %>% str_to_lower() %>% str_replace_all(' ', '_') %>% str_remove_all('[^[:alnum:]_]')
-data_org %<>% filter(year >= 2018, year >= 2021)
+
+data_org %<>% filter(year >= 2016, year <= 2021)
 
 # first cleaning
 data_org %<>% 
@@ -46,7 +47,8 @@ data_org %<>%
 data <- data_org %>% drop_na(doi) 
 data_miss <- data_org %>% filter(is.na(doi)) %>% distinct(pure_id, unit_short, .keep_all = TRUE) 
 
-data %>% filter(unit_short != 'other') %>%
+data %>% 
+  filter(unit_short != 'other') %>%
   distinct(doi, unit_short) %>%
   arrange(unit_short, doi) %>%
   write_excel_csv2('../output/pub_doi_liser.csv')

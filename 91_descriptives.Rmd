@@ -3,6 +3,10 @@ title: "Luxembourg Research Evaluation 2022"
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
   html_notebook:
     df_print: paged
     toc: yes
@@ -57,7 +61,7 @@ var_dept <- 'UD'
 
 ```{r}
 M <- readRDS(paste0('../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
-  distinct(UT, .keep_all = TRUE) # %>%filter(PY <= PY_min, PY <= PY_max)
+  distinct(UT, .keep_all = TRUE) %>% filter(PY >= PY_min, PY <= PY_max)
 ```
 
 # General Overview over articles
@@ -129,7 +133,6 @@ text_lda_beta <- text_lda %>% tidy(matrix = "beta")
 text_lda_gamma <- text_lda %>% tidy(matrix = "gamma")
 ```
 
-
 ```{r}
 topic_names <- tibble( 
   topic = 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()),
@@ -151,9 +154,6 @@ text_lda_gamma %<>% left_join(topic_names, by = 'topic')
 ```{r}
 mycol_lda <- text_lda_beta %>% gg_color_select(cat = topic_name, pal = "Paired")
 ```
-
-
-I by now created some topic modelling. The results are now more fine-tuned, but there is still room for some improvement. We ran a LDA on the titles + abstracts of our corpus, aiming at identifying 6 topics (different evaluation methods point towards this number)
 
 ## Topics by topwords
 ```{r, fig.width=17.5, fig.height=15} 
@@ -191,7 +191,8 @@ text_lda_gamma %>%
   filter(PY >= PY_min & PY <= PY_max) %>%
   arrange(PY, topic_name) %>%
   plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, by = topic_name,  pal = "Paired", label = TRUE,
-                        y1_text = "Topic popularity annualy", y2_text = "Share of topic annually")
+                        y1_text = "Topic popularity annualy", y2_text = "Share of topic annually") +
+  xlim(c(2016, 2021))
 ```
 
 ## LDAViz
@@ -256,10 +257,6 @@ C_nw %>%
   relocate(com_name, everything())
 ```
 
-It is not the main focus of this exercise, but still informative to see which historical knowledge the fields draws from. 
-
-NOTE: Up to now I only report the most central members per community
-
 ```{r}
 C_nw %>% group_by(com) %>% 
   select(com, name, dgr_int, dgr) %>%
@@ -289,11 +286,11 @@ cit_com_year <- el_2m %>%
 
 ```
 
-
 ```{r, fig.width = 15, fig.height=7.5}
 cit_com_year %>%
   plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, by = com_name, pal = "Set1", label = TRUE,
-                        y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually")
+                        y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually") +
+  xlim(c(2016, 2021)) 
 ```
 
 ## Technical description
@@ -314,7 +311,7 @@ The intuition here is that references which are frequently cited together are li
 
 ## Research Areas main summary
 
-This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the more narrow research community of Sustainability Transitions (in which we will zoom in later), but also a set of adjacent research areas with some theoretical/methodological/application overlap.
+This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the main research area, but also a set of adjacent research areas with some theoretical/methodological/application overlap.
 
 ```{r}
 M_bib <- readRDS(paste0('../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble()
@@ -341,6 +338,7 @@ mycol_bib <- M_bib %>% gg_color_select(cat = com_name, pal = "Dark2")
 ```
 
 ### Main Characteristics
+
 To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). We identify the following communities = research areas.
 
 ```{r}
@@ -366,19 +364,13 @@ com_top_bib <- text_lda_gamma %>%
   select(com, com_name, topic_name) 
 ```
 
-
-TODO: Work on 
-
 ```{r}
-el_2m %>%
-  count(com_bib, com_cit) %>%
-  left_join(com_names_bib, by = c("com_bib" = "com")) %>%
-  left_join(com_names_cit, by = c("com_cit" = "com"))
+# TODO: Work on
+#el_2m %>%
+#  count(com_bib, com_cit) %>%
+#  left_join(com_names_bib, by = c("com_bib" = "com")) %>%
+#  left_join(com_names_cit, by = c("com_cit" = "com"))
 ```
-
-
-
-
 
 ```{r}
 com_top_bib %>% 
@@ -418,10 +410,10 @@ M_bib %>%
   filter(PY >= 1995) %>%
   complete(com_name, PY, fill = list(n = 0, n_rel = 0)) %>%
   plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, by = com_name, label = TRUE,
-                        y1_text = "Number publications annually", y2_text = "Share of publications annually")
+                        y1_text = "Number publications annually", y2_text = "Share of publications annually") +
+  xlim(c(2016, 2021))
 ```
 
-We again see quite some dynamics....
 
 ### Connectivity between the research areas
 

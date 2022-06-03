@@ -62,7 +62,7 @@ M <- convert2df(file = paste0('../data/scopus_', str_to_lower(var_inst), '.csv')
   semi_join(data_scival_dept, by = c('DI' = 'doi')) 
 ```
 
-NOTE: N falls from 180 to 163 for LISER UD. Reason?
+NOTE: N falls from 220 to 163 for LISER UD. Reason?
 Maybe observation periods, check...
 
 ```{r}
