@@ -139,7 +139,7 @@ seed <- M %>% select(XX, AU, PY, TI, UT) %>% inner_join(g_bib %N>% as_tibble() %
     mutate(n_com = n()) %>%
     slice_max(dgr_int, n = com_n_seed, with_ties = FALSE) %>%
   ungroup() %>%
-  select(com, n_com, dgr_int, TI, UT) %>%
+  select(com, n_com, dgr_int, PY, TI, AU, UT) %>%
   arrange(com, desc(dgr_int))
 ```
 
