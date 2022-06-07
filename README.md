@@ -13,7 +13,8 @@ The method for the research-field-mapping can be reiviewed here:
 ## LISER
 
 * Dept UD
-  * [Biblioemtric Mapping](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/91_descriptives_liser_ud.nb.html)
-  * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
+   * [Seed articels (to check)](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
+   * [Biblioemtric MappingResults](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/91_descriptives_liser_ud.nb.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
 
 
