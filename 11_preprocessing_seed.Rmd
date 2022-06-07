@@ -133,7 +133,7 @@ g_bib <- g_bib %N>%
 
 ```{r}
 ### Merge with main data
-seed <- M %>% select(XX, TI, UT) %>% inner_join(g_bib %N>% as_tibble() %>% select(name, dgr, dgr_jac, com, dgr_int), by = c('XX' = 'name')) %>%
+seed <- M %>% select(XX, AU, PY, TI, UT) %>% inner_join(g_bib %N>% as_tibble() %>% select(name, dgr, dgr_jac, com, dgr_int), by = c('XX' = 'name')) %>%
   distinct(XX, .keep_all = TRUE) %>%
   group_by(com) %>%
     mutate(n_com = n()) %>%
@@ -144,6 +144,12 @@ seed <- M %>% select(XX, TI, UT) %>% inner_join(g_bib %N>% as_tibble() %>% selec
 ```
 
 ```{r}
+seed %>% write_csv( paste0('output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv'))
+```
+
+
+
+```{r}
 seed %>% 
   filter(n_com >= com_size_bib) %>%
   group_by(com) %>%
@@ -152,5 +158,6 @@ seed %>%
   pull(UT) %>%
   paste0('EID(', .,')', collapse = ' OR ') 
 ```
+
 
 
