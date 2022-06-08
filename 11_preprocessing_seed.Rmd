@@ -87,7 +87,7 @@ rownames(M) <- M$XX
 ```{r}
 cutof_edge_bib = 1
 cutof_node_bib = 2
-com_size_bib = 10
+com_size_bib = 1
 com_n_seed = 5
 ```
 

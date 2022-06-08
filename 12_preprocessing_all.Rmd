@@ -136,8 +136,8 @@ g_bib <- mat_bib %>% igraph::graph_from_adjacency_matrix(mode = "undirected", we
 cutof_edge_bib <- 2
 cutof_node_bib <- 5
 
-cutof_edge_pct_bib <- 0.00
-cutof_node_pct_bib <- 0.00
+cutof_edge_pct_bib <- 0.05
+cutof_node_pct_bib <- 0.25
 ```
 
 ```{r}
@@ -156,12 +156,6 @@ g_bib <- g_bib %E>%
   mutate(weight_jac = weight / (.N()$CR_n[from] + .N()$CR_n[to] - weight) ) %E>%
   mutate(weight_jac = if_else(weight_jac > 1, 1, weight_jac) ) %N>%
   mutate(dgr_jac = centrality_degree(weights = weight_jac)) 
-```
-
-```{r}
-# # Inspect
-# g_bib %N>% as_tibble() %>% skimr::skim()
-# g_bib %E>% as_tibble() %>% skimr::skim()
 ```
 
 ```{r}
@@ -270,7 +264,7 @@ mat_cit <- M %>%
 
 ```{r}
 mat_cit %>% saveRDS(paste0('../temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-# mat_cit <- readRDS(paste0('../temp/temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+# mat_cit <- readRDS(paste0('../temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -323,7 +317,7 @@ g_cit %N>% as_tibble() %>% count(com)
 
 ```{r}
 # community detection
-com_size_cit <- 200
+com_size_cit <- 250
 ```
 
 
@@ -535,7 +529,8 @@ find_topics <- text_dtm %>%
     verbose = TRUE
 )
 
-find_topics %>% FindTopicsNumber_plot() # Taking 11 topics
+find_topics %>% FindTopicsNumber_plot() 
+# LISER UD: Taking 8 or 11 topics
 ```
 
 ```{r}
@@ -558,7 +553,7 @@ json_lda %>% serVis()
 # Save
 text_tidy %>% saveRDS(paste0('../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 text_lda %>% saveRDS(paste0('../temp/text_lda_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-%>% serVis(out.dir = paste0('output/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+json_lda %>% serVis(out.dir = paste0('output/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
