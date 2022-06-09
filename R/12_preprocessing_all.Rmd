@@ -41,25 +41,24 @@ library(bibliometrix)
 library(tidygraph)
 
 # own functions
-source("functions/functions_basic.R")
+source("../functions/functions_basic.R")
 # source("functions/00_parameters.R")
-```
 
-```{r global_options, include=FALSE}
+# global options
 knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE, 
                       message = FALSE)
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+var_inst <- 'LIH'
+var_dept <- 'DCR'
 ```
 
 # Preprocessing articles
 
 ```{r}
-files <- list.files(path = '../data/', pattern = paste0('scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed'), full.names = TRUE)
+files <- list.files(path = '../../data/seeds/', pattern = paste0('scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed'), full.names = TRUE)
 ```
 
 ```{r}
@@ -109,8 +108,8 @@ M %<>%
 
 ```{r}
 # Save whole compilation
-M %>% saveRDS(paste0('../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-# M <- read_rds(paste0('M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+M %>% saveRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+# M <- read_rds(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 
@@ -118,8 +117,8 @@ M %>% saveRDS(paste0('../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var
 
 ```{r}
 mat_bib <- M  %>% biblioNetwork(analysis = "coupling", network = "references", sep = ";", shortlabel =  FALSE)
-# mat_bib %>% saveRDS(paste0('../temp/mat_bib__', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-# mat_bib <- readRDS(paste0('../temp7mat_bib__', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+# mat_bib %>% saveRDS(paste0('../../temp/mat_bib__', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+# mat_bib <- readRDS(paste0('../../temp7mat_bib__', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -206,7 +205,7 @@ g_bib <- g_bib %N>%
 
 ```{r}
 # Save the objects we need lateron
-g_bib %>% saveRDS(paste0('../temp/g_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+g_bib %>% saveRDS(paste0('../../temp/g_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ## Merge with main data
@@ -215,7 +214,7 @@ g_bib %>% saveRDS(paste0('../temp/g_bib_', str_to_lower(var_inst), '_', str_to_l
 M_bib <- M %>% select(XX) %>% inner_join(g_bib %N>% as_tibble() %>% select(name, dgr, dgr_jac, com, dgr_int), by = c('XX' = 'name')) %>%
   distinct(XX, .keep_all = TRUE) 
 
-M_bib %>% saveRDS(paste0('../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+M_bib %>% saveRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ## Aggregated Network
@@ -244,7 +243,7 @@ g_bib_agg <- g_bib %N>%
 
 ```{r}
 # Save the objects we need lateron
-g_bib_agg %>% saveRDS(paste0('../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+g_bib_agg %>% saveRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -263,7 +262,7 @@ mat_cit <- M %>%
 ```
 
 ```{r}
-mat_cit %>% saveRDS(paste0('../temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+mat_cit %>% saveRDS(paste0('../../temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 # mat_cit <- readRDS(paste0('../temp/mat_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
@@ -278,7 +277,7 @@ g_cit <- mat_cit %>% igraph::graph_from_adjacency_matrix(mode = "undirected", we
 cutof_edge_cit <- 2
 cutof_node_cit <- 5
 
-cutof_edge_pct_cit <- 0.25
+cutof_edge_pct_cit <- 0.10
 cutof_node_pct_cit <- 0.25
 ```
 
@@ -317,7 +316,7 @@ g_cit %N>% as_tibble() %>% count(com)
 
 ```{r}
 # community detection
-com_size_cit <- 250
+com_size_cit <- 1000
 ```
 
 
@@ -339,13 +338,13 @@ g_cit <- g_cit %N>%
 
 ```{r}
 # Save the objects we need lateron
-g_cit %>% saveRDS(paste0('../temp/g_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+g_cit %>% saveRDS(paste0('../../temp/g_cit_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
 # generate citation report
 C_nw <- g_cit %N>% as_tibble() 
-C_nw %>%  saveRDS(paste0('../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+C_nw %>%  saveRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ## A ggregated Network
@@ -363,7 +362,7 @@ g_cit_agg <- g_cit %>%
 ```
 
 ```{r}
-g_cit_agg %>% saveRDS(paste0('../temp/g_cit_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+g_cit_agg %>% saveRDS(paste0('../../temp/g_cit_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -372,7 +371,6 @@ rm(mat_cit, g_cit, g_cit_agg)
 
 
 # 2 mode network 
-
 
 ```{r}
 rownames(M) <- M %>% pull(XX)
@@ -407,7 +405,7 @@ el_2m %<>%
 
 ```{r}
 # save
-el_2m %>% saveRDS(paste0('../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+el_2m %>% saveRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -531,11 +529,12 @@ find_topics <- text_dtm %>%
 
 find_topics %>% FindTopicsNumber_plot() 
 # LISER UD: Taking 8 or 11 topics
+# LIH DCR 12
 ```
 
 ```{r}
 # LDA
-n_topic = 11
+n_topic = 12
 
 text_lda <- text_dtm %>% LDA(k = n_topic, method= "Gibbs", control = list(seed = 1337))
 ```
@@ -551,9 +550,9 @@ json_lda %>% serVis()
 
 ```{r}
 # Save
-text_tidy %>% saveRDS(paste0('../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-text_lda %>% saveRDS(paste0('../temp/text_lda_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-json_lda %>% serVis(out.dir = paste0('output/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+text_tidy %>% saveRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+text_lda %>% saveRDS(paste0('../../temp/text_lda_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+json_lda %>% serVis(out.dir = paste0('../output/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -568,7 +567,7 @@ CR <- M %>% citations(sep = ";")
 ```
 
 ```{r}
-CR %>% saveRDS(paste0('../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+CR %>% saveRDS(paste0('../../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 
@@ -595,7 +594,7 @@ histResults %>% histPlot(n = 50, size = 10, labelsize = 5)
 ```
 
 ```{r}
-histResults %>% saveRDS(paste0('../temp/histResult_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+histResults %>% saveRDS(paste0('../../temp/histResult_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -612,7 +611,7 @@ M_threefield
 ```
 
 ```{r}
-M_threefield %>% saveRDS(paste0('../temp/threefield_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+M_threefield %>% saveRDS(paste0('../../temp/threefield_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 
 ```
 

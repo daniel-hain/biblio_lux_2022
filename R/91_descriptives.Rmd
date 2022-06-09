@@ -35,9 +35,9 @@ library(tidygraph)
 library(ggraph)
 
 # own functions
-source("functions/functions_basic.R")
-source("functions/functions_summary.R")
-source("functions/00_parameters.R")
+source("../functions/functions_basic.R")
+source("../functions/functions_summary.R")
+source("../functions/00_parameters.R")
 ```
 
 ```{r global_options, include=FALSE}
@@ -47,8 +47,8 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+var_inst <- 'LIH'
+var_dept <- 'DCR'
 ```
 
 <!-- ####################################################################################### -->
@@ -60,7 +60,7 @@ var_dept <- 'UD'
 # Initial Corpus generation 
 
 ```{r}
-M <- readRDS(paste0('../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
+M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
   distinct(UT, .keep_all = TRUE) %>% filter(PY >= PY_min, PY <= PY_max)
 ```
 
@@ -93,7 +93,7 @@ rm(results, prod_AU)
 ## Cited references
 
 ```{r}
-CR <- readRDS(paste0('../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+CR <- readRDS(paste0('../../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
 ```
 
 Top 20 cited references (by corpus documents):
@@ -124,8 +124,8 @@ rm(CR)
 
 ```{r}
 library(tidytext)
-text_tidy <- readRDS(paste0('../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-text_lda <- readRDS(paste0('../temp/text_LDA_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+text_lda <- readRDS(paste0('../../temp/text_LDA_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
 ```
 
 ```{r}
@@ -214,7 +214,7 @@ rm(text_tidy, text_lda)
 # Knowledge Bases: Co-Citation network analysis {.tabset}
 
 ```{r}
-C_nw <- readRDS(paste0('../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
 ```{r}
@@ -269,7 +269,7 @@ C_nw %>% group_by(com) %>%
 ### Development of Knowledge Bases
 
 ```{r}
-el_2m <- readRDS(paste0('../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
+el_2m <- readRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
   drop_na()
 ```
 
@@ -314,7 +314,7 @@ The intuition here is that references which are frequently cited together are li
 This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the main research area, but also a set of adjacent research areas with some theoretical/methodological/application overlap.
 
 ```{r}
-M_bib <- readRDS(paste0('../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble()
+M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble()
 ```
 
 ```{r}
@@ -419,7 +419,7 @@ M_bib %>%
 ### Connectivity between the research areas
 
 ```{r}
-g_agg <- readRDS(paste0('../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
+g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
   arrange(com) # %>%
 #   mutate(name = names_ra %>% pull(com_ra_name),
 #          color = cols_ra)
@@ -472,15 +472,15 @@ More recent articles have a higher pool of possible references to co-cite to, he
 ## Authors, Themes & Journals
 
 ```{r, fig.width=20, fig.height=17.5}
-M_threefield <- readRDS(paste0('../temp/threefield_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+#M_threefield <- readRDS(paste0('../../temp/threefield_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
 ```
 
 ```{r, fig.width=17.5, fig.height=17.5}
-M_threefield
+#M_threefield
 ```
 
 ```{r}
-rm(M_threefield)
+#rm(M_threefield)
 ```
 
 
