@@ -17,9 +17,9 @@ library(tidygraph)
 
 # read data
 
-data_org <- read_tsv('../data/publications_lih.txt')
+data_org <- read_tsv('../../data/publications_lih.txt')
 colnames(data_org) <-colnames(data_org) %>% str_to_lower() %>% str_replace_all(' ', '_') %>% str_remove_all('[^[:alnum:]_]')
-data_org %<>% filter(year >= 2018, year <= 2021)
+data_org %<>% filter(year >= 2016, year <= 2021)
 
 data %>% count(parent_organisational_units)
 

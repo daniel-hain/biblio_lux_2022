@@ -37,27 +37,27 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+var_inst <- 'LIH'
+var_dept <- 'DCR'
 ```
 
 # General Data Prep
 
 ```{r}
-data_scival_dept <- read_tsv(paste0('../data/scival_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.tsv')) 
+data_scival_dept <- read_csv2(paste0('../../data/scival_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.csv')) 
 colnames(data_scival_dept) <- colnames(data_scival_dept) %>% str_to_lower() %>% str_squish() %>% str_replace_all("[ ]", "_") %>% str_remove_all('[()\\*\\.\\,]')
 ```
 
 ```{r}
 # save all
-read_csv(paste0('../data/scopus_', str_to_lower(var_inst), '.csv')) %>% 
+read_csv(paste0('../../data/scopus_', str_to_lower(var_inst), '.csv')) %>% 
   semi_join(data_scival_dept, by = c('DOI' = 'doi') ) %>%
-  write_csv( paste0('../data/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed_0.csv'))
+  write_csv( paste0('../../data/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed_0.csv'))
 ```
 
 
 ```{r}
-M <- convert2df(file = paste0('../data/scopus_', str_to_lower(var_inst), '.csv'), dbsource = "scopus", format = "csv") %>%
+M <- convert2df(file = paste0('../../data/scopus_', str_to_lower(var_inst), '.csv'), dbsource = "scopus", format = "csv") %>%
   # Filter out other departments only.
   semi_join(data_scival_dept, by = c('DI' = 'doi')) 
 ```
@@ -121,6 +121,7 @@ g_bib <- g_bib %E>%
 ```{r}
 g_bib %N>% as_tibble() %>% count(com, sort = TRUE)
 ```
+
 ```{r}
 # Community size restriction
 g_bib <- g_bib %N>%
@@ -144,10 +145,8 @@ seed <- M %>% select(XX, AU, PY, TI, UT) %>% inner_join(g_bib %N>% as_tibble() %
 ```
 
 ```{r}
-seed %>% write_csv( paste0('output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv'))
+seed %>% write_csv( paste0('../output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv'))
 ```
-
-
 
 ```{r}
 seed %>% 
