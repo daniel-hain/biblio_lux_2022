@@ -34,13 +34,25 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```{r, include=FALSE}
 # Institute selection
-var_inst <- 'LIH'
+var_inst <- 'LISER'
 
 # Other variables
 PY_min = 2016
 PY_max = 2021
 ```
 
+## Workflow
+
+1. get data from institutes and departments on their publications
+2. Run 00_publications_org script on the institution
+3. Upload to Scival by matching DOIs (record nonmatching DOIs)
+4. Generate standard scientific evaluation based in Scival
+5. Download a.) Bibliography of whole institute from Scopus as CSV, b.) Scival records of departments
+6. Filter Institute from Scopus by Department in SciVal by DOI
+7. Run 11_preprocessing_seed to identify the department seeds
+8. TAke seed EIDs and query the 2k most relevant articles to each
+9. Run 12_preprocessing_all
+10. Run 91_descriptives on it.
 
 # Read data
 
@@ -71,28 +83,30 @@ data_org %<>%
   ungroup()
 ```
 
-```{r}
-data_org %>% drop_na(doi) %>% distinct(doi, parent_organisational_units) %>% count(parent_organisational_units)
-```
-
 
 ```{r}
 # ! Note: For matching with departments 2 different forkflows for the institutes
 
 # filter institute & departments
-if(var_inst == 'LISER'){
-  data_org %<>% 
-  inner_join(read_csv2('../../data/mapping_units.csv') %>% filter(institute == var_inst, !is.na(unit_short)) %>% select(unit_old, unit_short),
-            by = c('organisations_of_contributors' = 'unit_old')) 
-}
-
-if(var_inst == 'LIH'){
-  data_org %<>% 
-  inner_join(read_csv2('../../data/mapping_units.csv') %>% filter(institute == var_inst, !is.na(unit_short)) %>% select(unit_old, unit_short),
-            by = c('parent_organisational_units' = 'unit_old')) 
-}
+if(var_inst == 'LISER'){ data_org %<>% rename(unit = organisations_of_contributors) }
+if(var_inst == 'LIH'){ data_org %<>% rename(unit = parent_organisational_units) }
 ```
 
+
+```{r}
+data_org %>% drop_na(doi) %>% distinct(doi, unit) %>% count(unit)
+```
+
+
+```{r}
+data_org %<>% 
+  inner_join(read_csv2('../../data/mapping_units.csv') %>% filter(institute == var_inst, !is.na(unit_short)) %>% select(unit_old, unit_short),
+             by = c('unit' = 'unit_old')) 
+```
+
+```{r}
+data_org %>% drop_na(doi) %>% distinct(doi, unit_short) %>% count(unit_short)
+```
 
 ```{r}
 # Missing data
@@ -109,9 +123,7 @@ data %>%
 ```
 
 ```{r}
-data %>%
-  distinct(doi, unit_short) %>%
-  count(unit_short)
+
 ```
 
 

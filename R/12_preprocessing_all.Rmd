@@ -51,14 +51,14 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LIH'
-var_dept <- 'DCR'
+var_inst <- 'LISER'
+var_dept <- 'UD'
 ```
 
 # Preprocessing articles
 
 ```{r}
-files <- list.files(path = '../../data/seeds/', pattern = paste0('scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed'), full.names = TRUE)
+files <- list.files(path = '../../data/seeds', pattern = paste0('scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed'), full.names = TRUE)
 ```
 
 ```{r}
@@ -111,6 +111,11 @@ M %<>%
 M %>% saveRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 # M <- read_rds(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
+
+```{r}
+M %>% biblioAnalysis(sep = ";") %>% saveRDS(paste0('../../temp/M_res_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+```
+
 
 
 # Networks Bibliographic
@@ -269,7 +274,7 @@ mat_cit %>% saveRDS(paste0('../../temp/mat_cit_', str_to_lower(var_inst), '_', s
 ```{r}
 g_cit <- mat_cit %>% igraph::graph_from_adjacency_matrix(mode = "undirected", weighted = TRUE, diag = FALSE) %>% 
   igraph::simplify() %>%
-  as_tbl_graph(directed = FALSE) # %N>% left_join(M %>% select(XX, SR, PY, TC, J9), by = c("name" = "XX")) %>% mutate(id = 1:n()) 
+  as_tbl_graph(directed = FALSE) # %N>% left_join(M %>% select(XX, SR, PY, TC, J9), by = c("name" = "XX")) %>% mutate(id = 1:n())
 ```
 
 ```{r}
@@ -316,7 +321,7 @@ g_cit %N>% as_tibble() %>% count(com)
 
 ```{r}
 # community detection
-com_size_cit <- 1000
+com_size_cit <- (g_cit %N>% as_tibble() %>% nrow()) * 0.05
 ```
 
 
@@ -528,7 +533,7 @@ find_topics <- text_dtm %>%
 )
 
 find_topics %>% FindTopicsNumber_plot() 
-# LISER UD: Taking 8 or 11 topics
+# LISER UD: Taking 8 or 12 topics
 # LIH DCR 12
 ```
 

@@ -47,8 +47,8 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LIH'
-var_dept <- 'DCR'
+var_inst <- 'LISER'
+var_dept <- 'UD'
 ```
 
 <!-- ####################################################################################### -->
@@ -71,10 +71,12 @@ M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(v
 To start with, a general overview over the documents in the corpus.
 
 ```{r}
-results <- biblioAnalysis(M, sep = ";")
+# results <- biblioAnalysis(M, sep = ";")
+results <- read_rds(paste0('../../temp/M_res_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 
 results %>% summary(k = 10, pause = FALSE)
 ```
+
 And a graphical visualization
 
 ```{r}
@@ -482,9 +484,6 @@ More recent articles have a higher pool of possible references to co-cite to, he
 ```{r}
 #rm(M_threefield)
 ```
-
-
-
 
 ```{r, fig.width=17.5, fig.height=17.5}
 ### Conceptual trajectories: Historical citation path analysis

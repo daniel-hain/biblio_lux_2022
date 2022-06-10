@@ -37,8 +37,8 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LIH'
-var_dept <- 'DCR'
+var_inst <- 'LISER'
+var_dept <- 'UD'
 ```
 
 # General Data Prep
