@@ -1,0 +1,142 @@
+---
+title: "Luxembourg Research Evaluation 2022"
+author: "Daniel S. Hain"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document:
+    toc: no
+  html_notebook:
+    df_print: paged
+    toc: no
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+### Generic preamble
+rm(list=ls())
+Sys.setenv(LANG = "en")
+options(scipen = 5)
+set.seed(1337)
+
+### Load packages  
+library(knitr) # For display of the markdown
+library(kableExtra) # For table styling
+
+library(tidyverse)
+library(magrittr)
+```
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r, include=FALSE}
+# institute and department
+var_inst<- 'LISER'
+var_dept <- 'UD'
+
+# timeframe
+PY_min = 2018
+PY_max = 2021
+```
+
+```{r, include=FALSE}
+# load data
+data <- read_tsv(paste0('../../data/publications_', str_to_lower(var_inst), '.txt'))
+colnames(data) <-colnames(data) %>% str_to_lower() %>% str_replace_all(' ', '_') %>% str_remove_all('[^[:alnum:]_]')
+
+# First cleaning & filtering
+data %<>% 
+  # Filter timeframe
+  filter(year >= PY_min,
+         year <= PY_max) %>%
+  # clean up DOIs
+   mutate(doi = dois_digital_object_identifiers %>% 
+            str_remove('^.*doi.org/') %>% 
+            str_remove('^.*dx\\.') %>% 
+            str_remove('^/') %>% 
+            str_remove(' ') %>% 
+            str_squish() %>%
+            str_replace_all('%', '/')) %>%
+  # complete missing DOI
+  group_by(pure_id) %>%
+  arrange(pure_id, doi) %>%
+  fill(doi, .direction = 'downup') %>%
+  ungroup()
+
+# ! Note: For matching with departments 2 different forkflows for the institutes
+# filter institute & departments
+if(var_inst == 'LISER'){ data %<>% rename(unit = organisations_of_contributors) }
+if(var_inst == 'LIH'){ data %<>% rename(unit = parent_organisational_units) }
+```
+
+```{r, include=FALSE}
+# Join with provided unit maps to get the correct joined units
+data %<>% 
+  inner_join(read_csv2('../../data/mapping_units.csv') %>% filter(institute == var_inst, !is.na(unit_short)) %>% select(unit_old, unit_short),
+             by = c('unit' = 'unit_old')) 
+
+```
+
+```{r, include=FALSE}
+# Join with provided unit maps to get the correct joined units
+data %<>% 
+  inner_join(read_csv2('../../data/mapping_units.csv') %>% filter(institute == var_inst, !is.na(unit_short)) %>% select(unit_old, unit_short),
+             by = c('unit' = 'unit_old')) 
+
+# load matching errors from SciVal (self-created c&p from scival import)
+data %<>% 
+  left_join(read_csv2('../../output/pub_doi_unmatched.csv') %>% filter(institute == var_inst, unit == var_dept) %>% select(doi, issue_scival), by = 'doi') %>%
+  mutate(issue = if_else(is.na(doi), 'missing DOI', issue_scival)) %>%
+  drop_na(issue)
+```
+
+# Introduction
+
+The bibliometric part of the 2022 research evaluation is based on Scopus data, one of the most comprehensive providers of academic publications. However, some potentially relevant scholarly output is not covered. Reasons might be that the publication outlet is not Scopus indexed. While most academic journals are, the coverage of bookchapters and conference proceedings is less exhaustive. In rare cases, errors in the database can also lead to underreporting.
+
+To get an exhaustive overview covering all scholarly output, find below a breakdown of publications not matched with Scopus, and therefore not included in the overal evaluation.
+
+# By Type
+
+```{r}
+data %>%
+  count(issue, year) %>%
+  ggplot(aes(x = year, y = n, fill = issue)) + 
+  geom_col() +
+  theme(legend.position = 'bottom') +
+  labs(title = paste(var_inst, 'publications dept.', var_dept, 'not included in reporting', sep = ' '),
+       subtitle = 'By reason',
+       x = 'Year', y = 'Number of Publications')
+```
+
+```{r}
+data %>%
+  count(type, year) %>%
+  ggplot(aes(x = year, y = n, fill = type)) + 
+  geom_col() +
+  theme(legend.position = 'bottom') +
+  labs(title = paste(var_inst, 'publications dept.', var_dept, 'not included in reporting', sep = ' '),
+       subtitle = 'By publication type',
+       x = 'Year', y = 'Number of Publications')
+```
+
+# By outlet (Journal articles only)
+
+```{r results='asis'}
+data %>%
+  filter(type == 'Article') %>%
+  mutate(journal_title = journal_title %>% str_replace_all("[^[:alnum:]]", " ") ) %>%
+  count(journal_title, sort = TRUE) %>%
+  kable(booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht') 
+```
+
+# Endnotes
+
+```{r}
+# After knitted do this
+file.rename(from = "92_missing_pubs.pdf", 
+            to = paste0('../../output/', var_inst, '_', var_dept, '_missing_pubs.pdf'))
+```

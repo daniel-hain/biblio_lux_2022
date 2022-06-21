@@ -24,31 +24,43 @@ options(scipen = 5)
 set.seed(1337)
 
 ### Load packages  
-library(knitr) # For display of the markdown
-library(kableExtra) # For table styling
-
+# general
 library(tidyverse)
 library(magrittr)
 
+# Kiblio & NW
 library(bibliometrix)
 library(tidygraph)
 library(ggraph)
+
+# NLP
+library(tidytext)
+
+# Knit
+library(knitr) # For display of the markdown
+library(kableExtra) # For table styling
 
 # own functions
 source("../functions/functions_basic.R")
 source("../functions/functions_summary.R")
 source("../functions/00_parameters.R")
-```
 
-```{r global_options, include=FALSE}
+# Knitr options
 knitr::opts_chunk$set(echo = FALSE, 
                       warning = FALSE, 
                       message = FALSE)
 ```
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+var_inst <- 'LIST'
+var_dept <- 'ERIN'
+```
+
+```{r, include=FALSE}
+# Load data
+M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
+  distinct(UT, .keep_all = TRUE) %>% 
+  filter(PY >= PY_min, PY <= PY_max)
 ```
 
 <!-- ####################################################################################### -->
@@ -57,27 +69,27 @@ var_dept <- 'UD'
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 
-# Initial Corpus generation 
 
-```{r}
-M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
-  distinct(UT, .keep_all = TRUE) %>% filter(PY >= PY_min, PY <= PY_max)
-```
+# Introduction: `var_inst` `var_inst`
+
+XXX
+XXX To come
+XXX
+
 
 # General Overview over articles
 
 ## Main Indicators: Publications, Authors, Countries
 
-To start with, a general overview over the documents in the corpus.
-
-```{r}
+```{r, include=FALSE}
 # results <- biblioAnalysis(M, sep = ";")
 results <- read_rds(paste0('../../temp/M_res_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-
-results %>% summary(k = 10, pause = FALSE)
 ```
 
-And a graphical visualization
+```{r}
+# RODO figure out how to not plot all
+results %>% summary(k = 10, pause = FALSE)
+```
 
 ```{r}
 results %>% plot(k = 10, pause = FALSE)
@@ -88,13 +100,13 @@ prod_AU <- M %>% authorProdOverTime(k = 10, graph = TRUE)
 #plot(prod_AU$graph)
 ```
 
-```{r}
+```{r, include=FALSE}
 rm(results, prod_AU)
 ```
 
 ## Cited references
 
-```{r}
+```{r, include=FALSE}
 CR <- readRDS(paste0('../../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
 ```
 
@@ -103,18 +115,12 @@ Top 20 cited references (by corpus documents):
 ```{r}
 CR$Cited %>% as_tibble() %>% head(20) %>% 
   kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 8)
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-```{r}
+```{r, include=FALSE}
 rm(CR)
 ```
-
-
-```{r}
-#M %>% gen_summary(top_n = 20, level = "PUB", what = "count", plot = TRUE) 
-```
-
 
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
@@ -124,18 +130,15 @@ rm(CR)
 
 # Topic modelling
 
-```{r}
-library(tidytext)
+```{r, include=FALSE}
 text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 text_lda <- readRDS(paste0('../../temp/text_LDA_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
-```
 
-```{r}
 text_lda_beta <- text_lda %>% tidy(matrix = "beta") 
 text_lda_gamma <- text_lda %>% tidy(matrix = "gamma")
 ```
 
-```{r}
+```{r, include=FALSE}
 topic_names <- tibble( 
   topic = 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()),
   topic_name = 
@@ -154,7 +157,7 @@ text_lda_gamma %<>% left_join(topic_names, by = 'topic')
 
 
 ```{r}
-mycol_lda <- text_lda_beta %>% gg_color_select(cat = topic_name, pal = "Paired")
+mycol_lda <- text_lda_beta %>% gg_color_select(cat = topic_name, pal = pal_tb)
 ```
 
 ## Topics by topwords
@@ -177,7 +180,6 @@ text_lda_beta %>%
 #htmlwidgets::saveWidget(plotly::as_widget(plot_ly), '../output\vis_plotly_topic_terms.html', selfcontained = TRUE)
 ```
 
-This might still be finetuned, but initially doesnt look that bad I think. All the topics for me seem to be somewhat identifiable. We should maybe start naming them to make their interpretation later easier. 
 
 ## Topics over time
 
@@ -192,15 +194,18 @@ text_lda_gamma %>%
   select(PY, topic_name, weight, weight_rel) %>%
   filter(PY >= PY_min & PY <= PY_max) %>%
   arrange(PY, topic_name) %>%
-  plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, by = topic_name,  pal = "Paired", label = TRUE,
+  plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, t_min = PY_min, t_max = PY_max, by = topic_name,  label = TRUE, pal = pal_tb, 
                         y1_text = "Topic popularity annualy", y2_text = "Share of topic annually") +
-  xlim(c(2016, 2021))
-```
+  plot_annotation(title = paste('Topic Modelling:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute topic appearance (left), Relative topic appearance (right)')
 
+
+```
+<!--
 ## LDAViz
 Here you find a nice way of exploring topics via the `LDAVIz` methodology of visulizing the result of an LDA. It dispolays all topics in a 2 dimensional TSNE (similar to PCA, but optimized for graphical illustration in 2d), and also gives a nice visual representation over the topics top-word distribution and overall frequencies of this words in the corpus. The $\lambda$ parameter regulates the importance-ordering of the topwords. High $\lambda$ order words by the highest propability to appear in the topic to the lowest (independent of the overall word popularity in the corpus), whle low $\lambda$ emphasize words which are very specific to the topic, and rarely appear in others.
-
-Play a bit around. Since it would be here a bit condensed, here in fullscreen for a better overview.
+-->
 
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
@@ -208,18 +213,18 @@ Play a bit around. Since it would be here a bit condensed, here in fullscreen fo
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 
-```{r}
+```{r, include=FALSE}
 rm(text_tidy, text_lda)
 ```
 
 
 # Knowledge Bases: Co-Citation network analysis {.tabset}
 
-```{r}
+```{r, include=FALSE}
 C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
 ```
 
-```{r}
+```{r, include=FALSE}
 com_names_cit <- tibble( 
   com = 1:(C_nw %>% pull(com) %>% n_distinct()),
   com_name = 
@@ -236,14 +241,13 @@ com_names_cit <- tibble(
 )
 ```
 
-```{r}
+```{r, include=FALSE}
 C_nw %<>% left_join(com_names_cit, by = "com")
 ```
 
-```{r}
-mycol_cit <- C_nw %>% gg_color_select(cat = com_name, pal = "Set1")
+```{r, include=FALSE}
+mycol_cit <- C_nw %>% gg_color_select(cat = com_name, pal = pal_kb)
 ```
-
 
 **Note:** This analysis refers the co-citation analysis, where the cited references and not the original publications are the unit of analysis. See tab `Technical description`for additional explanations
 
@@ -270,13 +274,13 @@ C_nw %>% group_by(com) %>%
 ```
 ### Development of Knowledge Bases
 
-```{r}
+```{r, include=FALSE}
 el_2m <- readRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
   drop_na()
 ```
 
 
-```{r}
+```{r, include=FALSE}
 cit_com_year <- el_2m %>%
   count(com_cit, PY, name = 'TC') %>%
   group_by(PY) %>%
@@ -290,9 +294,11 @@ cit_com_year <- el_2m %>%
 
 ```{r, fig.width = 15, fig.height=7.5}
 cit_com_year %>%
-  plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, by = com_name, pal = "Set1", label = TRUE,
+  plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, t_min = PY_min, t_max = PY_max, by = com_name, pal = pal_kb, label = TRUE,
                         y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually") +
-  xlim(c(2016, 2021)) 
+  plot_annotation(title = paste('Knowledge Bses:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute knowledge base appearance (left), Relative knowledge base appearance (right)')
 ```
 
 ## Technical description
@@ -315,11 +321,11 @@ The intuition here is that references which are frequently cited together are li
 
 This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the main research area, but also a set of adjacent research areas with some theoretical/methodological/application overlap.
 
-```{r}
+```{r, include=FALSE}
 M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble()
 ```
 
-```{r}
+```{r, include=FALSE}
 com_names_bib <- tibble( 
   com = 1:(M_bib %>% pull(com) %>% n_distinct()),
   com_name = 
@@ -331,19 +337,19 @@ com_names_bib <- tibble(
 )
 ```
 
-```{r}
+```{r, include=FALSE}
 M_bib %<>% left_join(com_names_bib, by = "com")
 ```
 
-```{r}
-mycol_bib <- M_bib %>% gg_color_select(cat = com_name, pal = "Paired")
+```{r, include=FALSE}
+mycol_bib <- M_bib %>% gg_color_select(cat = com_name, pal = pal_ra)
 ```
 
 ### Main Characteristics
 
 To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). We identify the following communities = research areas.
 
-```{r}
+```{r, include=FALSE}
 com_summary_bib <- M_bib %>%
   drop_na(com) %>%
   group_by(com, com_name) %>%
@@ -355,7 +361,7 @@ com_summary_bib <- M_bib %>%
 com_summary_bib
 ```
 
-```{r}
+```{r, include=FALSE}
 com_top_bib <- text_lda_gamma %>%
   left_join(M_bib %>% select(XX, com), by = c('document' = 'XX')) %>%
   count(com, topic_name, wt = gamma, name = 'weight') %>%
@@ -376,9 +382,9 @@ com_top_bib <- text_lda_gamma %>%
 ```
 
 ```{r}
-com_top_bib %>% 
-  kable() %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 8)
+#com_top_bib %>% 
+#  kable() %>%
+#  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 8)
 ```
 
 
@@ -410,11 +416,12 @@ M_bib %>%
   mutate(n_rel = n / n_PY) %>%
   select(com_name, PY, n, n_rel) %>%
   arrange(com_name, PY) %>% 
-  filter(PY >= 1995) %>%
   complete(com_name, PY, fill = list(n = 0, n_rel = 0)) %>%
-  plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, by = com_name, label = TRUE,
+  plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, t_min = PY_min, t_max = PY_max, by = com_name, label = TRUE, pal = pal_ra,
                         y1_text = "Number publications annually", y2_text = "Share of publications annually") +
-  xlim(c(2016, 2021))
+  plot_annotation(title = paste('Research Areas:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute research area appearance (left), Relative research area appearance (right)')
 ```
 
 
@@ -436,7 +443,7 @@ g_agg %E>%
   geom_node_point(aes(size = N, color = factor(com)))  + 
   geom_node_text(aes(label = com), repel = TRUE) +
   theme_graph(base_family = "Arial") +
-  scale_color_brewer(palette = 'Paired') 
+  scale_color_brewer(palette = pal_ra) 
 ```
 
 ## Technical description
@@ -491,5 +498,20 @@ More recent articles have a higher pool of possible references to co-cite to, he
 #histResults %>% histPlot(n =50, size = 10, labelsize = 7.5)
 #rm(histResults)
 ```
+
+# Endnotes
+
+```{r}
+# After knitted do this
+file.rename(from = "91_descriptives.nb.html", 
+            to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.nb.html'))
+```
+
+file.copy(from = "path_to_original_file",
+          to   = "path_to_move_to")
+
+Then you can remove the original file with file.remove():
+
+file.remove("path_to_original_file")
 
 
