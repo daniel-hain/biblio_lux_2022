@@ -5,7 +5,7 @@
 Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg research evaluation. Its purpose is:
 
 * To map the broader research community and distinct research field the department contributes to.
-* Identify core knowledge bases, research areaS, TRENDS AND TOPICS.
+* Identify core knowledge bases, research areas, topics, and trends.
 * Highlight the positioning of the department within this dynamics.
 
 ## In formation on methods, techniquers & workflow
