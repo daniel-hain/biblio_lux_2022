@@ -20,19 +20,12 @@ gg_color_hue <- function(n) {
 ##################################################################
 # Little to make sure the colors of one or more plots are always aligned with a certain palette
 
-gg_color_select <- function(x, cat, pal = NULL) {
+gg_color_select <- function(x, pal = NULL) {
   require(RColorBrewer)
-  cat <-   rlang::enquo(cat)
 
-  n_col <- x %>% distinct(!!cat) %>% pull()
-  
-  if(is.null(pal)){
-    mycol <- gg_color_hue(length(n_col))
-  } 
-  if(!is.null(pal)){
-    mycol <- brewer.pal(length(n_col), pal)
-  }
-  names(mycol) <- n_col
+  n_col <- x %>% n_distinct() 
+  if(is.null(pal)){mycol <- gg_color_hue(n_col) } 
+  if(!is.null(pal)){mycol <- brewer.pal(n_col, pal)}
   return(mycol)
 }
   
@@ -60,7 +53,8 @@ plot_summary_timeline <- function(x, y1, y2, t, by,
   if(!is.null(t_max)){ x %<>% filter({{t}} <= PY_max)}
   
   # colors
-  mycol <- x %>% gg_color_select(cat = {{by}}, pal = pal)
+  mycol <- x %>% pull({{by}}) %>% gg_color_select(pal = pal)
+  #mycol <- x %>% gg_color_select(cat = {{by}}, pal = pal)
   
   # generate the plots
   x %<>% select({{t}}, {{y1}}, {{y2}}, {{by}}) 
