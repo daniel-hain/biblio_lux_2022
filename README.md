@@ -16,9 +16,37 @@ The method for the research-field-mapping can be reiviewed here:
 
 # LISER
 
-* Dept UD (Pilot)
-   * [Seed articels (1. to check)](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
-   * Field Mapping Results
-      * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general__liser_ud.nb.html)
-      * [Biblioemtric Mapping (preliminary)](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.nb.html)
-      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
+## Department UD (Pilot)
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_ud.nb.html)
+   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.nb.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
+
+
+
+# LIH
+
+## Department DCR (Pilot)
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dcr_seed.csv)
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dcr.nb.html)
+   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.nb.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.4)
+
+
+
+# LIST
+
+## Department ERIN (Pilot)
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_erin_seed.csv)
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_erin.nb.html)
+   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.nb.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.4)
