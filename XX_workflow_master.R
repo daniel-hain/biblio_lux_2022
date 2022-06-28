@@ -31,7 +31,9 @@ library(tidyverse)
 ###########################################################################################
 
 # Use all or filter for what you need
-select_dept <- read_csv2('../data/names_inst_dept.csv') #%>% filter(institute %in% c('LISER'), department %in% c('UD'))
+select_dept <- read_csv2('../data/names_inst_dept.csv') %>% 
+  filter(institute %in% c('LISER', 'LIST', 'LIH')) %>% 
+  filter(department %in% c('UD', 'ERIN', 'DCR'))
 
 ###########################################################################################
 ########################### Create department 
@@ -42,16 +44,16 @@ select_dept <- read_csv2('../data/names_inst_dept.csv') #%>% filter(institute %i
 
 rm(list=setdiff(ls(), "select_dept"))
 
-select_inst <- select_dept %>% distinct(institute) %>% filter(institute != 'LIST')
+# Select institute
+select_inst <- select_dept %>% distinct(institute) %>% filter(!(institute %in% c('LIST') ))
 
 for(i in 1:nrow(select_inst)){
   var_inst <- select_inst[i, 'institute']
   source('R/00_preprocess_institute.R')
 }
-
-
+rm(select_inst)
 ###########################################################################################
-########################### Create department 
+########################### 1. Select Seed
 ###########################################################################################
 
 # 6. Filter Institute from Scopus by Department in SciVal by EID
@@ -67,7 +69,41 @@ for(i in 1:nrow(select_dept)){
   source('R/11_preprocess_seed.R')
 }
 
+###########################################################################################
+########################### Field Mapping
+###########################################################################################
  
+# 9. Run 12_preprocessing_all
+# --> 10. Run 91_descriptives on it.
+
+
+for(i in 1:nrow(select_dept)){
+  skip_row = 18
+  var_inst <- select_dept[i, 'institute']
+  var_dept <- select_dept[i, 'department']
+  source('R/12_preprocess_all.R')
+}
+
+###########################################################################################
+########################### Report creation
+###########################################################################################
+
+# 9. Run 12_preprocessing_all
+# --> 11. Create all reports
+
+##########
+### Field mapping general
+##########
+
+rm(list=setdiff(ls(), "select_dept"))
+
+for(i in 1:nrow(select_dept)){
+  rmarkdown::render("R/91_descriptives_general.Rmd", params = list(
+    institute = select_dept[i, 'institute'],
+    department = select_dept[i, 'department']),
+    output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[i, 'institute']), '_', str_to_lower(select_dept[i, 'department']), '.html'))
+  }
+
 
 
 

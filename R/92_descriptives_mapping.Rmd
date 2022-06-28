@@ -3,25 +3,34 @@ title: "Luxembourg Research Evaluation 2022"
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_notebook:
-    df_print: paged
-    toc: yes
-    toc_depth: 3
-    toc_float: yes
-    number_sections: yes
-    code_folding: hide
   html_document:
-    toc: yes
-    toc_depth: '3'
+    theme: flatly
+    code_folding: hide
     df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
 params:
-    insitute: TestInst
-    department: Testdept
+    institute: 
+       value: 'Testinst'
+    department:
+       value: 'Testdept'
 ---
+
+```{=html}
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+```
 
 ```{r setup, include=FALSE}
 ### Generic preamble
-rm(list=ls())
+#rm(list=ls())
 Sys.setenv(LANG = "en")
 options(scipen = 5)
 set.seed(1337)
@@ -57,17 +66,16 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE)
 ```
 
+
+```{r, include=FALSE}
+var_inst <- 'XX'
+var_dept <- 'YY'
+```
+
 ```{r, include=FALSE}
 var_inst <- params$institute
 var_dept <- params$department
 ```
-
-```{r, include=FALSE}
-#var_inst <- 'LIST'
-#var_dept <- 'ERIN'
-```
-
-
 
 
 # Introduction: `r var_inst` Department `r var_dept`
@@ -500,9 +508,11 @@ More recent articles have a higher pool of possible references to co-cite to, he
 
 # Endnotes
 
+All results are preliminary so far...
+
 ```{r}
 # After knitted do this
-file.rename(from = "92_descriptives_mapping.nb.html", to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.nb.html'))
+#file.rename(from = "92_descriptives_mapping.nb.html", to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html'))
 ```
 
 
