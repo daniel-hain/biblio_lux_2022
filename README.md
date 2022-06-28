@@ -78,7 +78,7 @@ The method for the research-field-mapping can be reiviewed here:
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_itis_seed.csv)
  
- ## Department ERIN (Pilot)
+ ## Department MRT
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_mrt_seed.csv)
