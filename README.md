@@ -25,7 +25,16 @@ The method for the research-field-mapping can be reiviewed here:
    * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.nb.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
 
+## Department LC
 
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lc_seed.csv)
+
+## Department LM
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lm_seed.csv)
+   
 
 # LIH
 
@@ -38,8 +47,21 @@ The method for the research-field-mapping can be reiviewed here:
    * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.nb.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.4)
 
+## Department DII
 
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dii_seed.csv)
 
+## Department DPH
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dph_seed.csv)
+
+## Department TMOH
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_tmoh_seed.csv)
+   
 # LIST
 
 ## Department ERIN (Pilot)
@@ -50,3 +72,13 @@ The method for the research-field-mapping can be reiviewed here:
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_erin.nb.html)
    * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.nb.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.4)
+ 
+ ## Department ITIS
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_itis_seed.csv)
+ 
+ ## Department ERIN (Pilot)
+
+1. Seed selection
+   * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_mrt_seed.csv)
