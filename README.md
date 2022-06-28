@@ -8,9 +8,14 @@ Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg 
 * Identify core knowledge bases, research areaS, TRENDS AND TOPICS.
 * Highlight the positioning of the department within this dynamics.
 
-The method for the research-field-mapping can be reiviewed here:
+## In formation on methods, techniquers & workflow
 
-[Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
+* Description of the applied workflow
+   * [Slide Deck](
+https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVrXEI/edit?usp=sharing)
+   * [Video (comming soon)](...) 
+* Paper demonstrating workflow & results
+   * [Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
 
 
 
