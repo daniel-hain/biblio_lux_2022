@@ -1,5 +1,7 @@
 #  Bibliometric Evaluation Luxembourg 2022
 
+## Introduction, aim & scope
+
 Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg research evaluation. Its purpose is:
 
 * To map the broader research community and distinct research field the department contributes to.
@@ -16,7 +18,7 @@ The method for the research-field-mapping can be reiviewed here:
 
 * Dept UD (Pilot)
    * [Seed articels (1. to check)](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
-   * Field Matting Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general__liser_ud.nb.html)
+   * Field Mapping Results
+      * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general__liser_ud.nb.html)
       * [Biblioemtric Mapping (preliminary)](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.nb.html)
       * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
