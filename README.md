@@ -8,7 +8,7 @@ Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg 
 * Identify core knowledge bases, research areas, topics, and trends.
 * Highlight the positioning of the department within this dynamics.
 
-## In formation on methods, techniquers & workflow
+## Information on methods, techniquers & workflow
 
 * Description of the applied workflow
    * [Slide Deck](
