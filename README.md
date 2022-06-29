@@ -13,7 +13,7 @@ Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg 
 * Description of the applied workflow
    * [Slide Deck](
 https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVrXEI/edit?usp=sharing)
-   * [Video](https://www.loom.com/share/ae7f8bd65c7c49ca9670d0ac0b7e0e14) 
+   * [Intro Video](https://www.loom.com/share/ae7f8bd65c7c49ca9670d0ac0b7e0e14)
 * Paper demonstrating workflow & results
    * [Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
 
