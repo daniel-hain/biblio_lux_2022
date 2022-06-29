@@ -17,6 +17,16 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 * Paper demonstrating workflow & results
    * [Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
 
+## Tasks for deparetments
+
+1. Check you departments seed articles
+   * Column **com_seed** indicates which communities will be used as seeds in default settings (n >= 5% of all department articles). You can 1.) agree, 2.) select or deselect sommunities, and/or 3.) include alternative seed papers amoing your departments 2016-2021 publications.
+   * Note: For the sake of categorizing the cluster, the 5 most central papers will be reoported, but **only the top-1 paper will be used as seed**
+2. Label (in this order): (Name of max 3 words + 1-5 sentence description)
+   * Knowledge Bases
+   * Topics
+   * Research areas
+
 
 
 # LISER
