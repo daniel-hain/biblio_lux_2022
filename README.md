@@ -37,7 +37,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_ud.html)
-   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
 
 ## Department LC
@@ -59,7 +59,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dcr_seed.csv)
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dcr.html)
-   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.4)
 
 ## Department DII
@@ -85,7 +85,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_erin_seed.csv)
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_erin.html)
-   * [Field Mapping: Research Areas & Knowledge Badses](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.4)
  
  ## Department ITIS
