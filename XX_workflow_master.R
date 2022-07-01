@@ -33,7 +33,7 @@ library(tidyverse)
 # Use all or filter for what you need
 select_dept <- read_csv2('../data/names_inst_dept.csv') %>% 
   filter(institute %in% c('LISER', 'LIST', 'LIH')) %>% 
-  filter(department %in% c('UD', 'ERIN', 'DCR'))
+  filter(department %in% c('ERIN'))
 
 ###########################################################################################
 ########################### Create department 
@@ -49,6 +49,7 @@ select_inst <- select_dept %>% distinct(institute) %>% filter(!(institute %in% c
 
 for(i in 1:nrow(select_inst)){
   var_inst <- select_inst[i, 'institute']
+  print(paste0('=======> Starting Processing: ', str_to_lower(var_inst)))
   source('R/00_preprocess_institute.R')
 }
 rm(select_inst)
@@ -66,7 +67,9 @@ for(i in 1:nrow(select_dept)){
   skip_row = 18
   var_inst <- select_dept[i, 'institute']
   var_dept <- select_dept[i, 'department']
+  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   source('R/11_preprocess_seed.R')
+  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
 
 ###########################################################################################
@@ -81,7 +84,9 @@ for(i in 1:nrow(select_dept)){
   skip_row = 18
   var_inst <- select_dept[i, 'institute']
   var_dept <- select_dept[i, 'department']
+  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   source('R/12_preprocess_all.R')
+  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
 
 ###########################################################################################
@@ -98,11 +103,28 @@ for(i in 1:nrow(select_dept)){
 rm(list=setdiff(ls(), "select_dept"))
 
 for(i in 1:nrow(select_dept)){
+  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept)))
   rmarkdown::render("R/91_descriptives_general.Rmd", params = list(
     institute = select_dept[i, 'institute'],
     department = select_dept[i, 'department']),
     output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[i, 'institute']), '_', str_to_lower(select_dept[i, 'department']), '.html'))
-  }
+  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept)))
+}
+
+##########
+### Field mapping bibliometric categorization
+##########
+
+rm(list=setdiff(ls(), "select_dept"))
+
+for(i in 1:nrow(select_dept)){
+  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept)))
+  rmarkdown::render("R/92_descriptives_mapping.Rmd", params = list(
+    institute = select_dept[i, 'institute'],
+    department = select_dept[i, 'department']),
+    output_file = paste0('../output/field_mapping/field_mapping_', str_to_lower(select_dept[i, 'institute']), '_', str_to_lower(select_dept[i, 'department']), '.html'))
+  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept)))
+}
 
 
 

@@ -21,7 +21,7 @@ params:
 ```{=html}
 <style type="text/css">
 .main-container {
-  max-width: 1800px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -239,7 +239,7 @@ kb_sum <-C_nw %>% group_by(com) %>%
 
 for(i in 1:nrow(com_names_cit)){
   kb_sum <- kb_sum %>%
-    pack_rows(paste0('Knowledge Base 2', i, ': ', com_names_cit[i, 'com_name']), (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
+    pack_rows(paste0('Knowledge Base ', i, ': ', com_names_cit[i, 'com_name']), (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
   }
 
 kb_sum %>%

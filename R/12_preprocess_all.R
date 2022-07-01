@@ -48,14 +48,17 @@ library(ldatuning)
 
 # own Parameters
 source("functions/00_parameters.R")
+source("functions/functions_basic.R")
 
 # institute and department
-var_inst <- 'LIST'
-var_dept <- 'ERIN'
+#var_inst <- 'LIST'
+#var_dept <- 'ERIN'
 
 ###########################################################################################
 ########################### Load & preprocessing articles
 ###########################################################################################
+
+print('Starting: Loading Files')
 
 files <- list.files(path = '../data/seeds', pattern = paste0('scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed'), full.names = TRUE)
 
@@ -104,6 +107,8 @@ M %>% biblioAnalysis(sep = ";") %>% saveRDS(paste0('../temp/M_res_', str_to_lowe
 ###########################################################################################
 ########################### Networks Bibliographic
 ###########################################################################################
+
+print('Starting: Bibliographic Coupling network')
 
 mat_bib <- M  %>% biblioNetwork(analysis = "coupling", network = "references", sep = ";", shortlabel =  FALSE)
 mat_bib %>% saveRDS(paste0('../temp/mat_bib__', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
@@ -201,6 +206,8 @@ rm(mat_bib, g_bib, com_size_bib, cutof_edge_bib, cutof_node_bib, g_bib_agg)
 ########################### Network Cocitation 
 ###########################################################################################
 
+print('Starting: Co-Citation Network')
+
 mat_cit <- M %>%
   semi_join(M_bib, by = 'XX') %>%
   as.data.frame() %>% 
@@ -283,6 +290,8 @@ rm(mat_cit, g_cit, g_cit_agg)
 ########################### 2 mode network 
 ###########################################################################################
 
+print('Starting: 2 Mode Network')
+
 rownames(M) <- M %>% pull(XX)
 
 m_2m <- M %>% 
@@ -314,6 +323,8 @@ rm(m_2m, g_2m, el_2m, C_nw)
 ###########################################################################################
 ########################### Topicmodel
 ########################################################################################### 
+
+print('Starting: Topic Modelling')
 
 # Extract text to work with
 text_tidy <- M %>% 
@@ -396,12 +407,13 @@ find_topics <- text_dtm %>%
   )
 
 find_topics %>% FindTopicsNumber_plot() 
+ERIN = 10
 # LISER UD: 12 
 # LIH DCR 12
-# LIST ERIN 11
+# LIST ERIN 10
 
 # LDA
-n_topic = 11
+n_topic = 10
 
 text_lda <- text_dtm %>% LDA(k = n_topic, method= "Gibbs", control = list(seed = 1337))
 
@@ -423,6 +435,8 @@ rm(text_tidy, text_dtm, text_lda, json_lda)
 ###########################################################################################
 ########################### Local citations
 ########################################################################################### 
+
+print('Starting: Further Analysis')
 
 CR <- M %>% citations(sep = ";")
 CR %>% saveRDS(paste0('../temp/CR_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))

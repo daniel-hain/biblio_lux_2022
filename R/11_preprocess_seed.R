@@ -45,6 +45,8 @@ source("functions/00_parameters.R")
 ########################### Load & preprocessing articles
 ###########################################################################################
 
+print('Starting Preprocessing of seed articles')
+
 # skip_row = 18
 data_scival_dept <- read_csv(paste0('../data/scival_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.csv'), skip = skip_row) 
 colnames(data_scival_dept) <- colnames(data_scival_dept) %>% str_to_lower() %>% str_squish() %>% str_replace_all("[ /-]", "_") %>% str_remove_all('[()\\*\\.\\,]')
