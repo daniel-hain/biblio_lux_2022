@@ -44,12 +44,19 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lc_seed.csv)
-
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lc.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lc.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lc.rds/index.html#topic=0&lambda=0.4)
+   
 ## Department LM
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lm_seed.csv)
-   
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lm.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lm.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lm.rds/index.html#topic=0&lambda=0.4)   
 
 # LIH
 
@@ -66,12 +73,20 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dii_seed.csv)
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dii.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dii.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dii.rds/index.html#topic=0&lambda=0.4)   
 
 ## Department DPH
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dph_seed.csv)
-
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dph.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dph.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dph.rds/index.html#topic=0&lambda=0.4)
+   
 ## Department TMOH
 
 1. Seed selection
@@ -92,8 +107,16 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_itis_seed.csv)
- 
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_itis.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_itis.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.4)
+   
  ## Department MRT
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_mrt_seed.csv)
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_mrt.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_mrt.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_mrt.rds/index.html#topic=0&lambda=0.4)
