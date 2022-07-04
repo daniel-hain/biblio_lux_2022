@@ -46,13 +46,14 @@ library(ldatuning)
 ########################### Variable definitions
 ###########################################################################################
 
+rm(list=ls())
 # own Parameters
 source("functions/00_parameters.R")
 source("functions/functions_basic.R")
 
 # institute and department
-#var_inst <- 'LIST'
-#var_dept <- 'ERIN'
+var_inst <- 'LIH'
+var_dept <- 'TMOH'
 
 ###########################################################################################
 ########################### Load & preprocessing articles
@@ -398,22 +399,35 @@ text_dtm <- text_tidy %>%
 # Finding nummer of topics
 find_topics <- text_dtm %>%
   FindTopicsNumber(
-    topics = seq(from = 4, to = 15, by = 1),
+    topics = seq(from = 5, to = 12, by = 1),
     metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
     method = "Gibbs",
     control = list(seed = 1337),
-    mc.cores = 4L,
+    mc.cores = 3L,
     verbose = TRUE
   )
 
 find_topics %>% FindTopicsNumber_plot() 
-ERIN = 10
-# LISER UD: 12 
-# LIH DCR 12
-# LIST ERIN 10
+
+### LISER
+# LM 9
+# LC 11
+# UD 8
+
+### LIST
+# ERIN 10
+# ITIS 11
+# MRT 9 
+
+### LIH
+# DII 11
+# DCR 11
+# DPH 11
+# TMOH 10
+
 
 # LDA
-n_topic = 10
+n_topic = 11
 
 text_lda <- text_dtm %>% LDA(k = n_topic, method= "Gibbs", control = list(seed = 1337))
 

@@ -31,9 +31,9 @@ library(tidyverse)
 ###########################################################################################
 
 # Use all or filter for what you need
-select_dept <- read_csv2('../data/names_inst_dept.csv') %>% 
-  filter(institute %in% c('LISER', 'LIST', 'LIH')) %>% 
-  filter(department %in% c('ERIN'))
+select_dept <- read_csv2('../data/names_inst_dept.csv') #%>% 
+  #filter(institute %in% c('LISER', 'LIST', 'LIH')) %>% 
+  #filter(department %in% c('ERIN'))
 
 ###########################################################################################
 ########################### Create department 
@@ -71,6 +71,21 @@ for(i in 1:nrow(select_dept)){
   source('R/11_preprocess_seed.R')
   print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
+
+# For printing all the seeds for C&P in Scopus
+for(i in 1:nrow(select_dept)){
+  var_inst <- select_dept[i, 'institute']
+  var_dept <- select_dept[i, 'department']
+  print(paste0('=======> Seed Articles ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  print(
+    read_csv( paste0('output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv'), show_col_types = FALSE) %>%
+      filter(seed_com == TRUE) %>%
+      group_by(com) %>% slice_max(dgr_int, n = 1, with_ties = FALSE) %>% ungroup() %>%
+      pull(UT) %>% paste0('EID(', .,')', collapse = ' OR ')  )
+  print('==============================')
+}
+
+
 
 ###########################################################################################
 ########################### Field Mapping

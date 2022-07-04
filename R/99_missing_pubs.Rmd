@@ -5,10 +5,6 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   pdf_document:
     toc: no
-  html_notebook:
-    df_print: paged
-    toc: no
-    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
