@@ -91,7 +91,11 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_tmoh_seed.csv)
-   
+2. Field Mapping Results
+   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_tmoh.html)
+   * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_tmoh.html)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_tmoh.rds/index.html#topic=0&lambda=0.4)
+
 # LIST
 
 ## Department ERIN (Pilot)
