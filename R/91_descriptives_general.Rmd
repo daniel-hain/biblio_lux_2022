@@ -123,8 +123,8 @@ seed <-convert2df(file = paste0('../../data/seeds/scopus_', str_to_lower(var_ins
 
 The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. They can be selected in three ways:
 
-1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at:`r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
-2. MAnual selection of relevant publications.
+1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at `r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
+2. Manual selection of relevant publications.
 3. A combination of 1. and 2.
 
 The present analysis is based on the following seed articles:

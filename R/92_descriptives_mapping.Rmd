@@ -127,8 +127,8 @@ seed <-convert2df(file = paste0('../../data/seeds/scopus_', str_to_lower(var_ins
 
 The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. They can be selected in three ways:
 
-1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at:`r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
-2. MAnual selection of relevant publications.
+1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at: `r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
+2. Manual selection of relevant publications.
 3. A combination of 1. and 2.
 
 The present analysis is based on the following seed articles:
@@ -255,7 +255,8 @@ The $\lambda$ slider allows to rank the terms according to term relevance. By de
 # Knowledge Bases: Co-Citation network analysis {.tabset}
 
 ```{r, include=FALSE}
-C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))  %>%
+  drop_na(com)
 ```
 
 ```{r, include=FALSE}
@@ -360,7 +361,9 @@ The intuition here is that references which are frequently cited together are li
 This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the main research area, but also a set of adjacent research areas with some theoretical/methodological/application overlap.
 
 ```{r, include=FALSE}
-M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble()
+M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% 
+  as_tibble() %>%
+  drop_na(com)
 ```
 
 ```{r, include=FALSE}
