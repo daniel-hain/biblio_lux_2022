@@ -400,7 +400,8 @@ ra_sum <- M_bib %>% group_by(com_name) %>%
   left_join(M %>% select(XX, AU, PY, TI, TC), by = 'XX') %>%
   mutate(dgr_select = (dgr_int / max(dgr_int) * (TC / max(TC))) ) %>%
   slice_max(order_by = dgr_select, n = 10, with_ties = FALSE) %>% 
-  mutate(TC_year = TC / (2021 + 1 - PY),
+  mutate(TC_year = (TC / (2021 + 1 - PY)) %>% round(2),
+         dgr_int = dgr_int %>% round(2),
          AU = AU %>% str_trunc(25),
          TI = TI %>% str_trunc(125)) %>%
   select(com_name, AU, PY, TI, dgr_int, TC, TC_year) %>%
