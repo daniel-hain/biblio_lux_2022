@@ -1,8 +1,16 @@
 ---
-title: "Luxembourg Research Evaluation 2022"
+title: "Luxembourg Research Evaluation 2022: Field Mapping of Knowledge Structure"
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+  html_notebook:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
   html_document:
     theme: flatly
     code_folding: hide
@@ -17,6 +25,19 @@ params:
     department:
        value: 'Testdept'
 ---
+
+<!---
+# Add to YAML when reviewing
+  html_notebook:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+--->
+
 
 ```{=html}
 <style type="text/css">
@@ -68,8 +89,8 @@ knitr::opts_chunk$set(echo = FALSE,
 
 
 ```{r, include=FALSE}
-var_inst <- 'XX'
-var_dept <- 'YY'
+#var_inst <- 'LISER'
+#var_dept <- 'UD'
 ```
 
 ```{r, include=FALSE}
@@ -83,7 +104,7 @@ var_dept <- params$department
 Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg research evaluation. Its purpose is:
 
 * To map the broader research community and distinct research field the department contributes to.
-* Identify core knowledge bases, research areaS, TRENDS AND TOPICS.
+* Identify core knowledge bases, research areas gtrends and topics.
 * Highlight the positioning of the department within this dynamics.
 
 The method for the research-field-mapping can be reiviewed here:
@@ -101,10 +122,40 @@ The method for the research-field-mapping can be reiviewed here:
 # Load data
 M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
   distinct(UT, .keep_all = TRUE) %>% 
-  filter(PY >= PY_min, PY <= PY_max)
+  filter(PY >= PY_min, PY <= PY_max) 
 ```
 
-# Topic modelling
+# Seed Articles
+
+```{r, include=FALSE}
+seed <-convert2df(file = paste0('../../data/seeds/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed_select.csv'), dbsource = "scopus", format = "csv") %>%
+  as_tibble() %>%
+  mutate(seed = TRUE) 
+```
+
+The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. They can be selected in three ways:
+
+1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at:`r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
+2. MAnual selection of relevant publications.
+3. A combination of 1. and 2.
+
+The present analysis is based on the following seed articles:
+
+```{r}
+seed %>%
+  select(AU, PY, TI, JI) %>%
+  mutate(AU = AU %>% str_trunc(30),
+         TI = TI %>% str_trunc(100),
+         JI = JI %>% str_trunc(30)) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
+```
+
+
+
+# Topic modelling {.tabset}
+
+Here, we report the results of a LDA topic-modelling (basically, clustering on words) on all title+abstract texts.
 
 ```{r, include=FALSE}
 text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
@@ -135,8 +186,8 @@ text_lda_gamma %<>% left_join(com_names_top %>% select(com, com_name, col), by =
 ```
 
 
-
 ## Topics by topwords
+
 ```{r, fig.width=17.5, fig.height=17.5} 
 text_lda_beta %>%
   group_by(com_name) %>%
@@ -156,6 +207,7 @@ text_lda_beta %>%
 #htmlwidgets::saveWidget(plotly::as_widget(plot_ly), '../output\vis_plotly_topic_terms.html', selfcontained = TRUE)
 ```
 
+**Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see technical description in the next tab.
 
 ## Topics over time
 
@@ -189,6 +241,25 @@ rm(text_tidy, text_lda)
 ```
 
 
+## Technical Description
+
+### LDA Topic Modelling
+
+Topic modeling is a type of statistical modeling for discovering the abstract “topics” that occur in a collection of documents. Latent Dirichlet Allocation (LDA) is an example of topic model and is used to classify text in a document to a particular topic. 
+
+LDA is a generative probabilistic model that assumes each topic is a mixture over an underlying set of words, and each document is a mixture of over a set of topic probabilities. It builds a topic per document model and words per topic model, modeled as Dirichlet distributions.
+
+### LDAVis
+
+LDAvis is a web-based interactive visualisation of topics estimated using LDA. It provides a global view of the topics (and how they differ from each other), while at the same time allowing for a deep inspection of the terms most highly associated with each individual topic. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization. The visualisation has two basic pieces.
+
+The **left panel** visualise the topics as circles in the two-dimensional plane whose centres are determined by computing the Jensen–Shannon divergence between topics, and then by using multidimensional scaling to project the inter-topic distances onto two dimensions. Each topic’s overall prevalence is encoded using the areas of the circles.
+
+The **right panel** depicts a horizontal bar chart whose bars represent the individual terms that are the most useful for interpreting the currently selected topic on the left. A pair of overlaid bars represent both the corpus-wide frequency of a given term as well as the topic-specific frequency of the term.
+
+The $\lambda$ slider allows to rank the terms according to term relevance. By default, the terms of a topic are ranked in decreasing order according their topic-specific probability ( $\lambda$ = 1 ). Moving the slider allows to adjust the rank of terms based on much discriminatory (or "relevant") are for the specific topic. The suggested optimal value of $\lambda$ is 0.6.
+
+
 # Knowledge Bases: Co-Citation network analysis {.tabset}
 
 ```{r, include=FALSE}
@@ -219,11 +290,10 @@ C_nw %<>% left_join(com_names_cit %>% select(com, com_name, col), by = "com")
 
 ## Knowledge Bases summary
 
-### Main Indicators
 In order to partition networks into components or clusters, we deploy a **community detection** technique based on the **Lovain Algorithm** (Blondel et al., 2008). The Lovain Algorithm is a heuristic method that attempts to optimize the modularity of communities within a network by maximizing within- and minimizing between-community connectivity. We identify the following communities = knowledge bases.
 
-```{r}
-C_nw %>%
+```{r, include=FALSE}
+kb_stats <- C_nw %>%
   group_by(com_name) %>%
   summarise(n = n(), density_int = ((sum(dgr_int) / (n() * (n() - 1))) * 100) %>% round(3)) %>%
   relocate(com_name, everything())
@@ -239,14 +309,16 @@ kb_sum <-C_nw %>% group_by(com) %>%
 
 for(i in 1:nrow(com_names_cit)){
   kb_sum <- kb_sum %>%
-    pack_rows(paste0('Knowledge Base ', i, ': ', com_names_cit[i, 'com_name']), (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
+    pack_rows(paste0('Knowledge Base ', i, ': ', com_names_cit[i, 'com_name'],
+                     '   (n = ', kb_stats[i, 'n'], ', density =', kb_stats[i, 'density_int'] %>% round(2), ')' ), 
+              (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
   }
 
 kb_sum %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-### Development of Knowledge Bases
+## Development of Knowledge Bases
 
 ```{r, include=FALSE}
 el_2m <- readRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
@@ -318,26 +390,15 @@ com_names_bib <- tibble(
 M_bib %<>% left_join(com_names_bib %>% select(com, com_name, col), by = "com")
 ```
 
-### Main Characteristics
-
 To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). We identify the following communities = research areas.
 
 ```{r, include=FALSE}
-com_summary_bib <- M_bib %>%
+ra_stats <- M_bib %>%
   drop_na(com) %>%
   group_by(com, com_name) %>%
   summarise(n = n(), density_int = ((sum(dgr_int) / (n() * (n() - 1))) * 100) %>% round(3)) %>%
   select(com, com_name, everything())
 ```
-
-```{r}
-com_summary_bib
-```
-
-
-### Categorization
-
-I up to now gain only provide the 10 most central articles, which can be used to classify them
 
 ```{r}
 ra_sum <- M_bib %>% group_by(com_name) %>% 
@@ -353,13 +414,15 @@ ra_sum <- M_bib %>% group_by(com_name) %>%
 
 for(i in 1:nrow(com_names_bib)){
   ra_sum  %<>%
-    pack_rows(paste0('Research Area ', i, ': ', com_names_bib[i, 'com_name']), (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
+    pack_rows(paste0('Research Area ', i, ': ', com_names_bib[i, 'com_name'],
+                     '   (n = ', ra_stats[i, 'n'], ', density =', ra_stats[i, 'density_int'] %>% round(2), ')' ), 
+              (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
   }
 
 ra_sum %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-### Development
+## Development
 
 ```{r, fig.width = 15, fig.height=7.5}
 M_bib %>%
@@ -403,7 +466,24 @@ g_agg %E>%
                   caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (JAccard weighted)')
 ```
 
-### Knowledge Bases, Research Areas & Topics
+## Technical description
+In a bibliographic coupling network, the **coupling-strength** between publications is determined by the number of commonly cited references they share, assuming a common pool of references to indicate similarity in context, methods, or theory. Formally, the strength of the relationship between a publication pair $i$ and $j$ ($s_{i,j}^{bib}$) is expressed by the number of commonly cited references. 
+
+$$s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m}$$
+
+Since our corpus contains publications which differ strongly in terms of the number of cited references, we normalize the coupling strength by the Jaccard similarity coefficient. Here, we weight the intercept of two publications' bibliography (shared refeences) by their union (number of all references cited by either $i$ or $j$). It is bounded between zero and one, where one indicates the two publications to have an identical bibliography, and zero that they do not share any cited reference. Thereby, we prevent publications from having high coupling strength due to a large bibliography (e.g., literature surveys).
+
+$$S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}}$$
+
+More recent articles have a higher pool of possible references to co-cite to, hence they are more likely to be coupled. Consequently, bibliographic coupling represents a forward looking measure, and the method of choice to identify the current knowledge frontier at the point of analysis.
+
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+
+# Knowledge Bases, Research Areas & Topics Interaction
 
 ```{r, include=FALSE}
 # Nodes
@@ -485,26 +565,11 @@ fig <- plot_ly(type = "sankey",
 fig
 ```
 
-
-
-
-## Technical description
-In a bibliographic coupling network, the **coupling-strength** between publications is determined by the number of commonly cited references they share, assuming a common pool of references to indicate similarity in context, methods, or theory. Formally, the strength of the relationship between a publication pair $i$ and $j$ ($s_{i,j}^{bib}$) is expressed by the number of commonly cited references. 
-
-$$s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m}$$
-
-Since our corpus contains publications which differ strongly in terms of the number of cited references, we normalize the coupling strength by the Jaccard similarity coefficient. Here, we weight the intercept of two publications' bibliography (shared refeences) by their union (number of all references cited by either $i$ or $j$). It is bounded between zero and one, where one indicates the two publications to have an identical bibliography, and zero that they do not share any cited reference. Thereby, we prevent publications from having high coupling strength due to a large bibliography (e.g., literature surveys).
-
-$$S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}}$$
-
-More recent articles have a higher pool of possible references to co-cite to, hence they are more likely to be coupled. Consequently, bibliographic coupling represents a forward looking measure, and the method of choice to identify the current knowledge frontier at the point of analysis.
-
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 <!-- ############################# NEXT PART ############################################### -->
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
-
 
 # Endnotes
 
