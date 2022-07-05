@@ -3,14 +3,6 @@ title: "Luxembourg Research Evaluation 2022: Field Mapping of Knowledge Structur
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_notebook:
-    theme: flatly
-    code_folding: hide
-    df_print: paged
-    toc: false
-    toc_depth: 2
-    toc_float:
-      collapsed: false
   html_document:
     theme: flatly
     code_folding: hide
