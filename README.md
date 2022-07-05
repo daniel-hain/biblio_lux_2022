@@ -38,7 +38,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_ud.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.60&term=)
 
 ## Department LC
 
@@ -47,7 +47,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lc.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lc.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lc.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lc.rds/index.html#topic=0&lambda=0.60&term=)
    
 ## Department LM
 
@@ -56,7 +56,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lm.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lm.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lm.rds/index.html#topic=0&lambda=0.4)   
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lm.rds/index.html#topic=0&lambda=0.60&term=)   
 
 # LIH
 
@@ -67,7 +67,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dcr.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.60&term=)
 
 ## Department DII
 
@@ -76,7 +76,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dii.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dii.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dii.rds/index.html#topic=0&lambda=0.4)   
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dii.rds/index.html#topic=0&lambda=0.60&term=)   
 
 ## Department DPH
 
@@ -85,7 +85,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dph.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dph.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dph.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dph.rds/index.html#topic=0&lambda=0.60&term=)
    
 ## Department TMOH
 
@@ -94,7 +94,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_tmoh.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_tmoh.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_tmoh.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_tmoh.rds/index.html#topic=0&lambda=0.60&term=)
 
 # LIST
 
@@ -105,7 +105,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_erin.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.60&term=)
  
  ## Department ITIS
 
@@ -114,7 +114,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_itis.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_itis.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.60&term=)
    
  ## Department MRT
 
@@ -123,4 +123,4 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 2. Field Mapping Results
    * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_mrt.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_mrt.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_mrt.rds/index.html#topic=0&lambda=0.4)
+   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_mrt.rds/index.html#topic=0&lambda=0.60&term=)
