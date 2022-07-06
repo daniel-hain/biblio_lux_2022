@@ -107,7 +107,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.60&term=)
  
- ## Department ITIS
+## Department ITIS
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_itis_seed.csv)
@@ -116,7 +116,7 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_itis.html)
    * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.60&term=)
    
- ## Department MRT
+## Department MRT
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_mrt_seed.csv)
