@@ -52,8 +52,8 @@ source("functions/00_parameters.R")
 source("functions/functions_basic.R")
 
 # institute and department
-var_inst <- 'LIH'
-var_dept <- 'TMOH'
+var_inst <- 'LIST'
+var_dept <- 'ITIS'
 
 ###########################################################################################
 ########################### Load & preprocessing articles
@@ -417,7 +417,7 @@ find_topics %>% FindTopicsNumber_plot()
 ### LIST
 # ERIN 10
 # ITIS 11
-# MRT 9 
+# MRT 9
 
 ### LIH
 # DII 11

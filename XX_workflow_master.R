@@ -47,8 +47,8 @@ rm(list=setdiff(ls(), "select_dept"))
 # Select institute
 select_inst <- select_dept %>% distinct(institute) %>% filter(!(institute %in% c('LIST') ))
 
-for(i in 1:nrow(select_inst)){
-  var_inst <- select_inst[i, 'institute']
+for(k in 1:nrow(select_inst)){
+  var_inst <- select_inst[k, 'institute']
   print(paste0('=======> Starting Processing: ', str_to_lower(var_inst)))
   source('R/00_preprocess_institute.R')
 }
@@ -63,20 +63,20 @@ rm(select_inst)
 
 rm(list=setdiff(ls(), "select_dept"))
 
-for(i in 1:nrow(select_dept)){
+for(k in 1:nrow(select_dept)){
   skip_row = 18
-  var_inst <- select_dept[i, 'institute']
-  var_dept <- select_dept[i, 'department']
-  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  var_inst <- select_dept[k, 'institute']
+  var_dept <- select_dept[k, 'department']
+  print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   source('R/11_preprocess_seed.R')
-  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
 
 # For printing all the seeds for C&P in Scopus
-for(i in 1:nrow(select_dept)){
-  var_inst <- select_dept[i, 'institute']
-  var_dept <- select_dept[i, 'department']
-  print(paste0('=======> Seed Articles ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+for(k in 1:nrow(select_dept)){
+  var_inst <- select_dept[k, 'institute']
+  var_dept <- select_dept[k, 'department']
+  print(paste0('=======> Seed Articles ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   print(
     read_csv( paste0('output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv'), show_col_types = FALSE) %>%
       filter(seed_com == TRUE) %>%
@@ -95,13 +95,13 @@ for(i in 1:nrow(select_dept)){
 # --> 10. Run 91_descriptives on it.
 
 
-for(i in 1:nrow(select_dept)){
+for(k in 1:nrow(select_dept)){
   skip_row = 18
-  var_inst <- select_dept[i, 'institute']
-  var_dept <- select_dept[i, 'department']
-  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  var_inst <- select_dept[k, 'institute']
+  var_dept <- select_dept[k, 'department']
+  print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   source('R/12_preprocess_all.R')
-  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
 
 ###########################################################################################
@@ -117,13 +117,13 @@ for(i in 1:nrow(select_dept)){
 
 rm(list=setdiff(ls(), "select_dept"))
 
-for(i in 1:nrow(select_dept)){
-  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept)))
-  rmarkdown::render("R/91_descriptives_general.Rmd", params = list(
-    institute = select_dept[i, 'institute'],
-    department = select_dept[i, 'department']),
-    output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[i, 'institute']), '_', str_to_lower(select_dept[i, 'department']), '.html'))
-  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept)))
+for(k in 1:nrow(select_dept)){
+  print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
+  rmarkdown::render("R/91_descriptives_general.Rmd", quiet = TRUE, params = list(
+    institute = select_dept[k, 'institute'],
+    department = select_dept[k, 'department']),
+    output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
+  print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
 
 ##########
@@ -132,13 +132,14 @@ for(i in 1:nrow(select_dept)){
 
 rm(list=setdiff(ls(), "select_dept"))
 
-for(i in 1:nrow(select_dept)){
-  print(paste0('=======> Starting Processing ',i, '-', nrow(select_dept)))
-  rmarkdown::render("R/92_descriptives_mapping.Rmd", params = list(
-    institute = select_dept[i, 'institute'],
-    department = select_dept[i, 'department']),
-    output_file = paste0('../output/field_mapping/field_mapping_', str_to_lower(select_dept[i, 'institute']), '_', str_to_lower(select_dept[i, 'department']), '.html'))
-  print(paste0('=======> Finished Processing ',i, '-', nrow(select_dept)))
+for(k in 1:nrow(select_dept)){
+  #k = 4
+  print(paste0('=======> Starting Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
+  rmarkdown::render("R/92_descriptives_mapping.Rmd", quiet = TRUE, params = list(
+    institute = select_dept[k, 'institute'],
+    department = select_dept[k, 'department']),
+    output_file = paste0('../output/field_mapping/field_mapping_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
+  print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
 
 

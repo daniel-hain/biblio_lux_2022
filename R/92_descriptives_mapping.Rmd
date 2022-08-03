@@ -79,17 +79,21 @@ knitr::opts_chunk$set(echo = FALSE,
                       message = FALSE)
 ```
 
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-#var_inst <- 'LISER'
-#var_dept <- 'UD'
+var_inst <- 'LIST'
+var_dept <- 'ERIN'
 ```
 
 ```{r, include=FALSE}
-var_inst <- params$institute
-var_dept <- params$department
+#var_inst <- params$institute
+#var_dept <- params$department
 ```
-
 
 # Introduction: `r var_inst` Department `r var_dept`
 
@@ -143,7 +147,9 @@ seed %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-
+```{r}
+com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
+```
 
 # Topic modelling {.tabset}
 
@@ -161,43 +167,44 @@ text_lda_gamma <- text_lda %>% tidy(matrix = "gamma")
 com_names_top <- tibble( 
   com = 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()),
   type = 'TP',
-  col = com %>% gg_color_select(pal = pal_tp),
-  com_name = 
-    # # 1st alternative: Number them 1-n
-    paste(type, 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()))
-  # # 2nd alternative: Load from csv
-  # read_csv('../../data/community_labeling') %>% filter(type = 'topic', institute = var_inst, department = var_dept) %>% arrange(com) %>% pull(label)
-  # 3rd alternative: declare here
-    #c('1 TIS & Markets', '2 ? ... ',)
-  )
+  col = com %>% gg_color_select(pal = pal_tp)) %>%
+  left_join(com_labels %>% filter(type == 'TP') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('TP ', com, ': unlabeled'), label))
+            
+# # 1st alternative: Number them 1-n
+# paste(type, 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()))           
 ```
 
 ```{r, include=FALSE}
-text_lda_beta %<>%  left_join(com_names_top %>% select(com, com_name, col), by = c('topic' = 'com'))
-text_lda_gamma %<>% left_join(com_names_top %>% select(com, com_name, col), by = c('topic' = 'com'))
+text_lda_beta %<>%  inner_join(com_names_top %>% select(com, label, col), by = c('topic' = 'com'))
+text_lda_gamma %<>% inner_join(com_names_top %>% select(com, label, col), by = c('topic' = 'com'))
 ```
 
 
 ## Topics by topwords
 
-```{r, fig.width=17.5, fig.height=17.5} 
+```{r, fig.width=15, fig.height=15} 
 text_lda_beta %>%
-  group_by(com_name) %>%
+  group_by(label) %>%
   slice_max(beta, n = 10) %>%
   ungroup() %>%
-  mutate(term = reorder_within(term, beta, com_name)) %>%
-  ggplot(aes(term, beta, fill = factor(com_name))) +
+  mutate(term = reorder_within(term, beta, label)) %>%
+  ggplot(aes(term, beta, fill = factor(label))) +
   geom_col(show.legend = FALSE) +
-  facet_wrap(~ com_name, scales = "free", ncol = 3) +
+  facet_wrap(~ label, scales = "free", ncol = 3) +
   coord_flip() +
   scale_x_reordered() +
   labs(x = "Intra-topic distribution of word",
        y = "Words in topic") + 
-  scale_fill_manual(name = "Legend", values = com_names_top %>% pull(col)) 
+  scale_fill_manual(name = "Legend", values = com_names_top %>% pull(col)) +
+  theme(legend.position = 'bottom')
 
 #plot_ly <- plot %>% plotly::ggplotly()
 #htmlwidgets::saveWidget(plotly::as_widget(plot_ly), '../output\vis_plotly_topic_terms.html', selfcontained = TRUE)
 ```
+
+
+
 
 **Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see technical description in the next tab.
 
@@ -208,13 +215,13 @@ text_lda_gamma %>%
   rename(weight = gamma) %>%
   left_join(M %>% select(XX, PY), by = c('document' = 'XX')) %>%
   mutate(PY = as.numeric(PY)) %>%
-  group_by(PY, com_name) %>% summarise(weight = sum(weight)) %>% ungroup() %>%
+  group_by(PY, label) %>% summarise(weight = sum(weight)) %>% ungroup() %>%
   group_by(PY) %>% mutate(weight_PY = sum(weight)) %>% ungroup() %>%
   mutate(weight_rel = weight / weight_PY) %>%
-  select(PY, com_name, weight, weight_rel) %>%
+  select(PY, label, weight, weight_rel) %>%
   filter(PY >= PY_min & PY <= PY_max) %>%
-  arrange(PY, com_name) %>%
-  plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, t_min = PY_min, t_max = PY_max, by = com_name,  label = TRUE, pal = pal_tp, 
+  arrange(PY, label) %>%
+  plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label,  label = TRUE, pal = pal_tp, 
                         y1_text = "Topic popularity annualy", y2_text = "Share of topic annually") +
   plot_annotation(title = paste('Topic Modelling:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
@@ -237,13 +244,13 @@ rm(text_tidy, text_lda)
 
 ### LDA Topic Modelling
 
-Topic modeling is a type of statistical modeling for discovering the abstract “topics” that occur in a collection of documents. Latent Dirichlet Allocation (LDA) is an example of topic model and is used to classify text in a document to a particular topic. 
+Topic modeling is a type of statistical modeling for discovering the abstract “topics” that occur in a collection of documents. Latent Dirichlet Allocation (LDA, [Blei et al., 2003](https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf?ref=https://githubhelp.com)) is an example of topic model and is used to classify text in a document to a particular topic. 
 
 LDA is a generative probabilistic model that assumes each topic is a mixture over an underlying set of words, and each document is a mixture of over a set of topic probabilities. It builds a topic per document model and words per topic model, modeled as Dirichlet distributions.
 
 ### LDAVis
 
-LDAvis is a web-based interactive visualisation of topics estimated using LDA. It provides a global view of the topics (and how they differ from each other), while at the same time allowing for a deep inspection of the terms most highly associated with each individual topic. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization. The visualisation has two basic pieces.
+[LDAvis](https://github.com/cpsievert/LDAvis) is a web-based interactive visualisation of topics estimated using LDA ([Sievert & Shirley, 2014](https://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf)). It provides a global view of the topics (and how they differ from each other), while at the same time allowing for a deep inspection of the terms most highly associated with each individual topic. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization. The visualisation has two basic pieces.
 
 The **left panel** visualise the topics as circles in the two-dimensional plane whose centres are determined by computing the Jensen–Shannon divergence between topics, and then by using multidimensional scaling to project the inter-topic distances onto two dimensions. Each topic’s overall prevalence is encoded using the areas of the circles.
 
@@ -263,19 +270,16 @@ C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_l
 com_names_cit <- tibble( 
   com = 1:(C_nw %>% pull(com) %>% n_distinct()),
   type = 'KB',
-  col = com %>% gg_color_select(pal = pal_kb),
-  com_name = 
-    # # 1st alternative: Number them 1-n
-    paste(type, 1:(C_nw %>% pull(com) %>% n_distinct()))
-    # # 2nd alternative: Load from csv
-  # read_csv('../../data/community_labeling') %>% filter(type = 'knowledge_base', institute = var_inst, department = var_dept) %>% arrange(com) %>% pull(label)
-  # 3rd alternative: declare here
-    #c('1 TIS & Markets', '2 ? ... ',)
-  )
+  col = com %>% gg_color_select(pal = pal_kb)) %>%
+  left_join(com_labels %>% filter(type == 'KB') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('KB ', com, ': unlabeled'), label))
+
+# # 1st alternative: Number them 1-n
+# paste(type, 1:(C_nw %>% pull(com) %>% n_distinct()))
 ```
 
 ```{r, include=FALSE}
-C_nw %<>% left_join(com_names_cit %>% select(com, com_name, col), by = "com")
+C_nw %<>% left_join(com_names_cit %>% select(com, label, col), by = "com")
 ```
 
 
@@ -287,22 +291,23 @@ In order to partition networks into components or clusters, we deploy a **commun
 
 ```{r, include=FALSE}
 kb_stats <- C_nw %>%
-  group_by(com_name) %>%
+  group_by(label) %>%
   summarise(n = n(), density_int = ((sum(dgr_int) / (n() * (n() - 1))) * 100) %>% round(3)) %>%
-  relocate(com_name, everything())
+  relocate(label, everything())
 ```
 
 ```{r}
 kb_sum <-C_nw %>% group_by(com) %>% 
-  select(com, name, dgr_int, dgr) %>%
   arrange(com, desc(dgr_int)) %>%
   mutate(name = name %>% str_trunc(150)) %>%
   slice_max(order_by = dgr_int, n = 10, with_ties = FALSE) %>% 
+  ungroup() %>%
+  select( name, dgr_int, dgr) %>%
   kable() 
 
 for(i in 1:nrow(com_names_cit)){
   kb_sum <- kb_sum %>%
-    pack_rows(paste0('Knowledge Base ', i, ': ', com_names_cit[i, 'com_name'],
+    pack_rows(paste0('Knowledge Base ', i, ': ', com_names_cit[i, 'label'],
                      '   (n = ', kb_stats[i, 'n'], ', density =', kb_stats[i, 'density_int'] %>% round(2), ')' ), 
               (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
   }
@@ -327,13 +332,12 @@ cit_com_year <- el_2m %>%
   ungroup() %>%
   arrange(PY, com_cit) %>%
   left_join(com_names_cit , by = c('com_cit' = 'com')) %>% 
-  complete(com_name, PY, fill = list(TC = 0, TC_rel = 0))
-
+  complete(label, PY, fill = list(TC = 0, TC_rel = 0))
 ```
 
 ```{r, fig.width = 15, fig.height=7.5}
 cit_com_year %>%
-  plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, t_min = PY_min, t_max = PY_max, by = com_name, pal = pal_kb, label = TRUE,
+  plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, pal = pal_kb, label = TRUE,
                         y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually") +
   plot_annotation(title = paste('Knowledge Bses:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
@@ -370,19 +374,16 @@ M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to
 com_names_bib <- tibble( 
   com = 1:(M_bib %>% pull(com) %>% n_distinct()),
   type = 'RA',
-  col = com %>% gg_color_select(pal = pal_ra),
-  com_name = 
-    # # 1st alternative: Number them 1-n
-    paste(type, 1:(M_bib %>% pull(com) %>% n_distinct()))
-    # # 2nd alternative: Load from csv
-  # read_csv('../../data/community_labeling') %>% filter(type = 'research_area', institute = var_inst, department = var_dept) %>% arrange(com) %>% pull(label)
-  # 3rd alternative: declare here
-    #c('1 TIS & Markets', '2 ? ... ',)
-  )
+  col = com %>% gg_color_select(pal = pal_ra)) %>%
+  left_join(com_labels %>% filter(type == 'RA') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('RA ', com, ': unlabeled'), label))
+
+# # 1st alternative: Number them 1-n
+# paste(type, 1:(M_bib %>% pull(com) %>% n_distinct()))
 ```
 
 ```{r, include=FALSE}
-M_bib %<>% left_join(com_names_bib %>% select(com, com_name, col), by = "com")
+M_bib %<>% left_join(com_names_bib %>% select(com, label, col), by = "com")
 ```
 
 To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). We identify the following communities = research areas.
@@ -390,13 +391,13 @@ To identify communities in the field's knowledge frontier (labeled **research ar
 ```{r, include=FALSE}
 ra_stats <- M_bib %>%
   drop_na(com) %>%
-  group_by(com, com_name) %>%
+  group_by(com, label) %>%
   summarise(n = n(), density_int = ((sum(dgr_int) / (n() * (n() - 1))) * 100) %>% round(3)) %>%
-  select(com, com_name, everything())
+  select(com, label, everything())
 ```
 
 ```{r}
-ra_sum <- M_bib %>% group_by(com_name) %>% 
+ra_sum <- M_bib %>% group_by(label) %>% 
   left_join(M %>% select(XX, AU, PY, TI, TC), by = 'XX') %>%
   mutate(dgr_select = (dgr_int / max(dgr_int) * (TC / max(TC))) ) %>%
   slice_max(order_by = dgr_select, n = 10, with_ties = FALSE) %>% 
@@ -404,13 +405,13 @@ ra_sum <- M_bib %>% group_by(com_name) %>%
          dgr_int = dgr_int %>% round(2),
          AU = AU %>% str_trunc(25),
          TI = TI %>% str_trunc(125)) %>%
-  select(com_name, AU, PY, TI, dgr_int, TC, TC_year) %>%
+  select(AU, PY, TI, dgr_int, TC, TC_year) %>%
   kable()
 
 
 for(i in 1:nrow(com_names_bib)){
   ra_sum  %<>%
-    pack_rows(paste0('Research Area ', i, ': ', com_names_bib[i, 'com_name'],
+    pack_rows(paste0('Research Area ', i, ': ', com_names_bib[i, 'label'],
                      '   (n = ', ra_stats[i, 'n'], ', density =', ra_stats[i, 'density_int'] %>% round(2), ')' ), 
               (i*10-9),  (i*10), label_row_css = "background-color: #666; color: #fff;") 
   }
@@ -424,13 +425,13 @@ ra_sum %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", 
 M_bib %>%
   left_join(M %>% select(XX, PY), by = 'XX') %>%
   mutate(PY = PY %>% as.numeric()) %>%
-  group_by(com_name, PY) %>% summarise(n = n()) %>% ungroup() %>%
+  group_by(label, PY) %>% summarise(n = n()) %>% ungroup() %>%
   group_by(PY) %>% mutate(n_PY = sum(n)) %>% ungroup() %>%
   mutate(n_rel = n / n_PY) %>%
-  select(com_name, PY, n, n_rel) %>%
-  arrange(com_name, PY) %>% 
-  complete(com_name, PY, fill = list(n = 0, n_rel = 0)) %>%
-  plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, t_min = PY_min, t_max = PY_max, by = com_name, label = TRUE, pal = pal_ra,
+  select(label, PY, n, n_rel) %>%
+  arrange(label, PY) %>% 
+  complete(label, PY, fill = list(n = 0, n_rel = 0)) %>%
+  plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, label = TRUE, pal = pal_ra,
                         y1_text = "Number publications annually", y2_text = "Share of publications annually") +
   plot_annotation(title = paste('Research Areas:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
@@ -450,16 +451,18 @@ g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', st
 g_agg %E>% 
   filter(weight > 0 & from != to) %>%
   filter(weight >= quantile(weight, 0.25) )  %N>%
-  mutate(com = com %>% factor()) %>%
+  mutate(com = com_names_bib %>% pull(label)) %>%
   ggraph(layout = "circle") + 
-  geom_edge_fan(strenght = 0.075, aes(width = weight), alpha = 0.2)  + 
+  geom_edge_fan(strenght = 0.8, aes(width = weight), alpha = 0.2)  + 
   geom_node_point(aes(size = N, color = com))  + 
   geom_node_text(aes(label = com), repel = TRUE) +
   theme_graph(base_family = "Arial") +
+  theme(legend.position = 'bottom') +
+  scale_size(range = c(2,20)) +
   scale_color_brewer(palette = pal_ra) +
   labs(title = paste('Research Area Connectivity:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
-                  caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (JAccard weighted)')
+                  caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (Jaccard weighted)')
 ```
 
 ## Technical description
@@ -486,18 +489,18 @@ More recent articles have a higher pool of possible references to co-cite to, he
 nl_3m <- com_names_bib %>%
   bind_rows(com_names_cit) %>%
   bind_rows(com_names_top) %>%
-  rename(name = com_name,
+  rename(name = label,
          com_nr = com) %>%
   relocate(name)
 
 # Edges
 el_2m_kb <- el_2m %>%
   select(-from, -to) %>%
-  inner_join(com_names_cit %>% select(com, com_name), by = c('com_cit' = 'com')) %>%
-  inner_join(com_names_bib %>% select(com, com_name, col), by = c('com_bib' = 'com')) %>%
+  inner_join(com_names_cit %>% select(com, label), by = c('com_cit' = 'com')) %>%
+  inner_join(com_names_bib %>% select(com, label, col), by = c('com_bib' = 'com')) %>%
   mutate(weight = 1) %>%
-  rename(from = com_name.x,
-         to = com_name.y) %>% # generic
+  rename(from = label.x,
+         to = label.y) %>% # generic
   select(from, to, weight, col) %>% 
   drop_na() %>% 
   count(from, to, col, wt = weight, name = 'weight') %>%
@@ -507,9 +510,9 @@ el_2m_kb <- el_2m %>%
 
 el_2m_topic <- text_lda_gamma %>% select(-topic, -col) %>%
   left_join(M_bib %>% select(XX, com) %>% drop_na(com), by = c('document' = 'XX')) %>%
-  inner_join(com_names_bib %>% select(com, com_name, col), by = c('com' = 'com')) %>%
-  rename(from = com_name.y,
-         to = com_name.x,
+  inner_join(com_names_bib %>% select(com, label, col), by = c('com' = 'com')) %>%
+  rename(from = label.y,
+         to = label.x,
          weight = gamma) %>% # generic
   select(from, to, weight, col) %>% 
   drop_na() %>% 
@@ -530,7 +533,7 @@ g_3m <- el_2m_kb %>%
     coord_y = 0.1,
     coord_x = 0.001 + 1/(max(level)-1) * (level-1)
     )  %N>%
-  filter(!node_is_isolated(), !is.na(level))
+  filter(!is.na(level))
 ```
 
 ```{r, include=FALSE}
@@ -567,6 +570,35 @@ fig
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 
+<!--
+# Collaaboration
+
+```{r}
+nw_inst <- M %>% as_tibble() %>% metaTagExtraction(Field = "AU_UN") %>% 
+  select(UT, PY, int_dept, AU_UN) %>% 
+  # Add department as own entry in AU_UN
+  mutate(AU_UN = ifelse(int_dept == TRUE, paste0(AU_UN, ';', var_inst, ' ', var_dept), AU_UN)) %>%
+  # Sepperate AU_UN for 2_m edgelist
+  separate_rows(AU_UN, sep = ';') %>%
+  # filter
+  drop_na(AU_UN) %>%
+  filter(!(AU_UN %in% c('', ' ', 'NA', 'NOTREPORTED', 'NOTDECLARED'))) %>%
+  # Only 1 link per paper, independent of author number
+  distinct(UT, AU_UN, .keep_all = TRUE) 
+```
+
+```{r}
+el_uni <- nw_inst %>% 
+  left_join(nw_inst %>% select(UT, AU_UN), by = 'UT') %>% 
+  rename(from = AU_UN.x, to = AU_UN.y) %>%
+  filter(from != to) %>%
+  group_by(from, to) %>%
+  summarise(weight = n()) %>%
+  ungroup()
+```
+
+-->
+
 # Endnotes
 
 All results are preliminary so far...
@@ -575,6 +607,7 @@ All results are preliminary so far...
 # After knitted do this
 #file.rename(from = "92_descriptives_mapping.nb.html", to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html'))
 ```
+
 
 
 
