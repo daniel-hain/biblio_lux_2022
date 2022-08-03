@@ -13,9 +13,9 @@ output:
       collapsed: false
 params:
     institute: 
-       value: 'Testinst'
+       value: null
     department:
-       value: 'Testdept'
+       value: null
 ---
 
 <!---

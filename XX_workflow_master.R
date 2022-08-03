@@ -118,10 +118,11 @@ for(k in 1:nrow(select_dept)){
 rm(list=setdiff(ls(), "select_dept"))
 
 for(k in 1:nrow(select_dept)){
+  #k = 1
   print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
   rmarkdown::render("R/91_descriptives_general.Rmd", quiet = TRUE, params = list(
-    institute = select_dept[k, 'institute'],
-    department = select_dept[k, 'department']),
+    institute = select_dept[k, 'institute'] %>% pull(),
+    department = select_dept[k, 'department'] %>% pull()),
     output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
   print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
@@ -136,8 +137,8 @@ for(k in 1:nrow(select_dept)){
   #k = 4
   print(paste0('=======> Starting Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
   rmarkdown::render("R/92_descriptives_mapping.Rmd", quiet = TRUE, params = list(
-    institute = select_dept[k, 'institute'],
-    department = select_dept[k, 'department']),
+    institute = select_dept[k, 'institute'] %>% pull(),
+    department = select_dept[k, 'department'] %>% pull()),
     output_file = paste0('../output/field_mapping/field_mapping_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
   print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
