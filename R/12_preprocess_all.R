@@ -52,8 +52,8 @@ source("functions/00_parameters.R")
 source("functions/functions_basic.R")
 
 # institute and department
-var_inst <- 'LIST'
-var_dept <- 'ITIS'
+var_inst <- 'LIH'
+var_dept <- 'DPH'
 
 ###########################################################################################
 ########################### Load & preprocessing articles
@@ -420,14 +420,14 @@ find_topics %>% FindTopicsNumber_plot()
 # MRT 9
 
 ### LIH
-# DII 11
-# DCR 11
-# DPH 11
+# DII 12
+# DCR 12
+# DPH 12
 # TMOH 10
 
 
 # LDA
-n_topic = 11
+n_topic = 12
 
 text_lda <- text_dtm %>% LDA(k = n_topic, method= "Gibbs", control = list(seed = 1337))
 
