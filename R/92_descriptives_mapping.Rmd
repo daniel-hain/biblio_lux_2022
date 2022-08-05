@@ -408,6 +408,7 @@ ra_sum <- M_bib %>% group_by(label) %>%
          dgr_int = dgr_int %>% round(2),
          AU = AU %>% str_trunc(25),
          TI = TI %>% str_trunc(125)) %>%
+  ungroup() %>%
   select(AU, PY, TI, dgr_int, TC, TC_year) %>%
   kable()
 
