@@ -89,16 +89,16 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+# var_inst <- 'LISER'
+# var_dept <- 'UD'
 ```
 
 ```{r, include=FALSE}
-#var_inst <- params$institute
-#var_dept <- params$department
+var_inst <- params$institute
+var_dept <- params$department
 ```
 
-# Introduction: `r var_inst` Department `r var_dept`
+# Introduction: Mapping of broad research field around `r var_inst` Department `r var_dept`
 
 Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg research evaluation. Its purpose is:
 
@@ -109,6 +109,8 @@ Here are preliminary results of the bibliometric mapping of the 2022 Luxembourg 
 The method for the research-field-mapping can be reviewed here:
 
 [Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
+
+**Note:** The analysis in this document depicts the *larger research field* around the department, thereby all analysis results are based on the publications of the department plus related 
 
 
 <!-- ####################################################################################### -->
@@ -124,15 +126,19 @@ M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(v
   filter(PY >= PY_min, PY <= PY_max) 
 ```
 
+```{r}
+com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
+```
+
 # Seed Articles
+
+**Note:** The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. The departments research field is identified by selecting the 2000 most similar publications to the selected seed articles. See `Technical description`for additional explanations.
 
 ```{r, include=FALSE}
 seed <-convert2df(file = paste0('../../data/seeds/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed_select.csv'), dbsource = "scopus", format = "csv") %>%
   as_tibble() %>%
   mutate(seed = TRUE) 
 ```
-
-The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. 
 
 ```{r}
 seed %>%
@@ -144,13 +150,43 @@ seed %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
+# General Overview over the research field
+
+**Note:** This section provides basic descriptives of th identified research fielld, including number of articles over time, countries, institutions, and authors. See `Technical description`for additional explanations.
+
+```{r, include=FALSE}
+# results <- biblioAnalysis(M, sep = ";")
+results <- read_rds(paste0('../../temp/M_res_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+```
+
+## Main Indicators: Publications, Authors, Countries 
+
 ```{r}
-com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
+results %>% plot(k = 10, pause = FALSE)
+```
+
+```{r}
+prod_AU <- M %>% authorProdOverTime(k = 10, graph = TRUE)
+#plot(prod_AU$graph)
+```
+
+```{r, include=FALSE}
+rm(results, prod_AU)
+```
+
+## Connection between the research field's Top Authors-Keywords-Journals
+
+```{r, include=FALSE}
+M_threefield <- readRDS(paste0('../../temp/threefield_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+```
+
+```{r, fig.width=17.5, fig.height=17.5}
+M_threefield
 ```
 
 # Topic modelling 
 
-Here, we report the results of a LDA topic-modelling (basically, clustering on words) on all title+abstract texts.
+**Note:** Here, we report the results of a LDA topic-modelling (basically, clustering on words) on all title+abstract texts. Identified topics can be interpreted as broad themes in the research field. See `Technical description`for additional explanations.
 
 ```{r, include=FALSE}
 text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
@@ -200,9 +236,7 @@ text_lda_beta %>%
 #htmlwidgets::saveWidget(plotly::as_widget(plot_ly), '../output\vis_plotly_topic_terms.html', selfcontained = TRUE)
 ```
 
-**Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see technical description.
-
-## Topics over time
+**Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see ´Technical ´.
 
 ```{r, fig.width = 15, fig.height=7.5}
 text_lda_gamma %>%
@@ -217,7 +251,7 @@ text_lda_gamma %>%
   arrange(PY, label) %>%
   plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label,  label = TRUE, pal = pal_tp, 
                         y1_text = "Topic popularity annualy", y2_text = "Share of topic annually") +
-  plot_annotation(title = paste('Topic Modelling:', var_inst, 'Dept.', var_dept, sep = ' '),
+  plot_annotation(title = paste('Topic Modelling:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
                   caption = 'Absolute topic appearance (left), Relative topic appearance (right)')
 ```
@@ -229,11 +263,14 @@ text_lda_gamma %>%
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 
+
 ```{r, include=FALSE}
 rm(text_tidy, text_lda)
 ```
 
-# Knowledge Bases: Co-Citation network analysis {.tabset}
+# Knowledge Bases: Co-Citation network analysis 
+
+**Note:** This analysis refers the co-citation analysis, where the cited references and not the original publications are the unit of analysis. Identified knowledge bases can be interpreted as the knowledge foundation the field draws from. See `Technical description`for additional explanations.
 
 ```{r, include=FALSE}
 C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))  %>%
@@ -255,13 +292,6 @@ com_names_cit <- tibble(
 ```{r, include=FALSE}
 C_nw %<>% left_join(com_names_cit %>% select(com, label, col), by = "com")
 ```
-
-
-**Note:** This analysis refers the co-citation analysis, where the cited references and not the original publications are the unit of analysis. See  `Technical description`for additional explanations
-
-## Knowledge Bases summary
-
-In order to partition networks into components or clusters, we deploy a **community detection** technique based on the **Lovain Algorithm** (Blondel et al., 2008). The Lovain Algorithm is a heuristic method that attempts to optimize the modularity of communities within a network by maximizing within- and minimizing between-community connectivity. We identify the following communities = knowledge bases.
 
 ```{r, include=FALSE}
 kb_stats <- C_nw %>%
@@ -290,8 +320,6 @@ kb_sum %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-## Development of Knowledge Bases
-
 ```{r, include=FALSE}
 el_2m <- readRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
   drop_na()
@@ -313,18 +341,10 @@ cit_com_year <- el_2m %>%
 cit_com_year %>%
   plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, pal = pal_kb, label = TRUE,
                         y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually") +
-  plot_annotation(title = paste('Knowledge Bses:', var_inst, 'Dept.', var_dept, sep = ' '),
+  plot_annotation(title = paste('Knowledge Bses:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
                   caption = 'Absolute knowledge base appearance (left), Relative knowledge base appearance (right)')
 ```
-
-## Technical description
-In a co-cittion network, the strength of the relationship between a reference pair $m$ and $n$ ($s_{m,n}^{coc}$) is expressed by the number of publications $C$ which are jointly citing reference $m$ and $n$. 
-
-$$s_{m,n}^{coc} = \sum_i c_{i,m} c_{i,n}$$
-
-The intuition here is that references which are frequently cited together are likely to share commonalities in theory, topic, methodology, or context. It can be interpreted as a measure of similarity as evaluated by other researchers that decide to jointly cite both references. Because the publication process is time-consuming, co-citation is a backward-looking measure, which is appropriate to map the relationship between core literature of a field.
-
 
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
@@ -332,11 +352,9 @@ The intuition here is that references which are frequently cited together are li
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 
-# Research Areas: Bibliographic coupling analysis {.tabset}
+# Research Areas: Bibliographic coupling analysis
 
-## Research Areas main summary
-
-Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). Method details to be found in the `Technical description`. 
+**Note:** This analysis refers the bibliographic coupling analysis, where original publications are the unit of analysis. Identified research areas can be interpreted as the field's current research frontier. See `Technical description`for additional explanations.
 
 ```{r, include=FALSE}
 M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% 
@@ -392,8 +410,6 @@ for(i in 1:nrow(com_names_bib)){
 ra_sum %>% kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), font_size = 10)
 ```
 
-## Development
-
 ```{r, fig.width = 15, fig.height=7.5}
 M_bib %>%
   left_join(M %>% select(XX, PY), by = 'XX') %>%
@@ -406,12 +422,11 @@ M_bib %>%
   complete(label, PY, fill = list(n = 0, n_rel = 0)) %>%
   plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, label = TRUE, pal = pal_ra,
                         y1_text = "Number publications annually", y2_text = "Share of publications annually") +
-  plot_annotation(title = paste('Research Areas:', var_inst, 'Dept.', var_dept, sep = ' '),
+  plot_annotation(title = paste('Research Areas:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
                   caption = 'Absolute research area appearance (left), Relative research area appearance (right)')
 ```
 
-### Connectivity between the research areas
 
 ```{r, include=FALSE}
 g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
@@ -433,7 +448,7 @@ g_agg %E>%
   theme(legend.position = 'bottom') +
   scale_size(range = c(2,20)) +
   scale_color_brewer(palette = pal_ra) +
-  labs(title = paste('Research Area Connectivity:', var_inst, 'Dept.', var_dept, sep = ' '),
+  labs(title = paste('Research Area Connectivity:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
                   caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (Jaccard weighted)')
 ```
@@ -513,7 +528,7 @@ fig <- plot_ly(type = "sankey",
       mutate(col_rgb = paste0('rgba(', red, ',' , green, ',', blue, ',0.75)')) %>%  pull(col_rgb)
     )
 ) %>% 
-  layout(title = paste('Knowledge Bases, Research Areas & Topics:', var_inst, 'Dept.', var_dept, sep = ' '),
+  layout(title = paste('Knowledge Bases, Research Areas & Topics:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
          margin = list(l = 50, r = 50, b = 100, t = 100, pad = 2)) 
 ```
 
