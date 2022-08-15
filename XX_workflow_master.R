@@ -94,6 +94,7 @@ for(k in 1:nrow(select_dept)){
 # 9. Run 12_preprocessing_all
 # --> 10. Run 91_descriptives on it.
 
+rm(list=setdiff(ls(), "select_dept"))
 
 for(k in 1:nrow(select_dept)){
   skip_row = 18
@@ -101,6 +102,18 @@ for(k in 1:nrow(select_dept)){
   var_dept <- select_dept[k, 'department']
   print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
   source('R/12_preprocess_all.R')
+  print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+}
+
+# Adittional analysis
+# TODO: INtegrate it in first analysis, and make the analysis self contained that it runs automatically (problem is topic selection)
+rm(list=setdiff(ls(), "select_dept"))
+
+for(k in 1:nrow(select_dept)){
+  var_inst <- select_dept[k, 'institute']
+  var_dept <- select_dept[k, 'department']
+  print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
+  source('R/13_preprocess_all_addon.R')
   print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', str_to_lower(var_inst), '_', str_to_lower(var_dept)))
 }
 

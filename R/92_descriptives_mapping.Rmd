@@ -52,6 +52,7 @@ set.seed(1337)
 # general
 library(tidyverse)
 library(magrittr)
+library(widyr)
 
 # Kiblio & NW
 library(bibliometrix)
@@ -89,8 +90,8 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-# var_inst <- 'LISER'
-# var_dept <- 'UD'
+#var_inst <- 'LISER'
+#var_dept <- 'UD'
 ```
 
 ```{r, include=FALSE}
@@ -123,7 +124,10 @@ The method for the research-field-mapping can be reviewed here:
 # Load data
 M <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
   distinct(UT, .keep_all = TRUE) %>% 
-  filter(PY >= PY_min, PY <= PY_max) 
+  filter(PY >= PY_min, PY <= PY_max) %>%
+  group_by(PY) %>%
+    mutate(TC_cohort_rank = percent_rank(TC)) %>%
+  ungroup() 
 ```
 
 ```{r}
@@ -256,6 +260,29 @@ text_lda_gamma %>%
                   caption = 'Absolute topic appearance (left), Relative topic appearance (right)')
 ```
 
+```{r, fig.width = 15, fig.height=7.5}
+text_lda_gamma %>%
+  rename(weight = gamma) %>%
+  inner_join(M %>% select(XX, PY, TC_cohort_rank) %>%
+              filter(int_dept = TRUE), by = c('document' = 'XX')) %>%
+  # mutate(impact = weight* TC_cohort_rank) %>%
+  mutate(impact = TC_cohort_rank >= 0.9) %>%
+  group_by(PY) %>%
+  filter(percent_rank(weight) >= 0.5) %>%
+  ungroup() %>%
+  group_by(label, PY) %>%
+  summarise(impact = mean(impact)) %>%
+  ggplot(aes(x = PY, y = impact, col = label)) +
+  geom_line() + 
+  geom_point() + 
+  theme(legend.position = 'bottom') +
+  labs(title = paste('Topic Impact:', var_inst, 'Field around Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  x = 'Year',
+                  y = 'Topic Impact',
+                  caption = 'Topic Impact refers to the share of publications within the cohort top-10% cited publications associated with the topic',
+                  )
+```
 
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
@@ -535,6 +562,57 @@ fig <- plot_ly(type = "sankey",
 ```{r, fig.height= 10, fig.width=12.5}
 fig
 ```
+
+# Trends (Experimantal)
+
+```{r}
+uni_sim <- read_rds(paste0('../../temp/uni_sim_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+```
+
+
+```{r, fig.height=3, fig.width=4}
+desc <- uni_sim %>% 
+  filter(AU_UN == paste(var_inst, var_dept)) %>%
+  mutate(desc = paste0('N: ', n, ' \n',
+                       'Similarity to past:', sim_past %>% round(2), ' \n',
+                       'Similarity to future: ', sim_future %>% round(2), ' \n',
+                       'Lead-Lag Score: ', future_trend %>% round(2))) %>% pull(desc)
+  
+  
+uni_sim %>%
+  slice_max(order_by = n, n = 100) %>%
+  ggplot(aes(x = sim_past, y = sim_future)) +
+  geom_mark_ellipse(aes(filter = AU_UN == paste(var_inst, var_dept), label = AU_UN, fill = 'red1'), description = desc) + guides(fill = FALSE) +
+  #geom_point(data = uni_sim %>% filter(AU_UN == paste(var_inst, var_dept)), 
+  #           aes(size = n), col = 'darkred') + 
+  geom_point(aes(size = n, col = future_trend), alpha = 0.5) +
+  geom_text_repel( 
+    data =uni_sim %>% slice_max(order_by = n, n = 5) %>% filter(AU_UN != paste(var_inst, var_dept)), # Filter data first
+    aes(label = AU_UN),
+    box.padding = 1, max.overlaps = Inf) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = 'snow3') +
+  scale_colour_gradient(low = "blue", high = "red", name = "Lead-Lag Score") +
+  theme(legend.position = 'bottom') +
+  labs(x = 'Similarity to past',
+       y = 'Similarity to future',
+       title = paste('Field Lead-Lag Analysis:', var_inst, 'Dept.', var_dept, sep = ' '),
+       subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+       caption = 'x and y axis')
+# + lims(x = c(0.625, 0.725), y = c(0.625, 0.725))
+```
+<!---
+# Network & Collaboration
+
+g_cit <- g_cit %N>%
+  mutate(dgr = centrality_degree(weights = weight)) %N>%
+  filter(dgr >= cutof_node_cit) 
+
+g_cit <- g_cit %N>% 
+  filter(percent_rank(dgr) >= cutof_node_pct_cit) %E>%
+  filter(percent_rank(weight) >= cutof_edge_pct_cit) %N>%
+  filter(!node_is_isolated())
+
+--->
 
 # Endnotes
 
