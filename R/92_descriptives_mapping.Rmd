@@ -89,13 +89,13 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-#var_inst <- 'LISER'
-#var_dept <- 'UD'
+var_inst <- 'LISER'
+var_dept <- 'UD'
 ```
 
 ```{r, include=FALSE}
-var_inst <- params$institute
-var_dept <- params$department
+#var_inst <- params$institute
+#var_dept <- params$department
 ```
 
 # Introduction: `r var_inst` Department `r var_dept`
@@ -132,13 +132,7 @@ seed <-convert2df(file = paste0('../../data/seeds/scopus_', str_to_lower(var_ins
   mutate(seed = TRUE) 
 ```
 
-The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. They can be selected in three ways:
-
-1. Via bibliographic clustering of the institutions publications and selection of most central articles per cluster (only clsuters where n >= 0.05N). Selection can be found at: `r paste0('https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '_seed.csv')`
-2. Manual selection of relevant publications.
-3. A combination of 1. and 2.
-
-The present analysis is based on the following seed articles:
+The seed articles deemed representative for the active areas of research in the institution, and include authors affiliated with the institution. 
 
 ```{r}
 seed %>%
@@ -154,7 +148,7 @@ seed %>%
 com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
 ```
 
-# Topic modelling {.tabset}
+# Topic modelling 
 
 Here, we report the results of a LDA topic-modelling (basically, clustering on words) on all title+abstract texts.
 
@@ -206,10 +200,7 @@ text_lda_beta %>%
 #htmlwidgets::saveWidget(plotly::as_widget(plot_ly), '../output\vis_plotly_topic_terms.html', selfcontained = TRUE)
 ```
 
-
-
-
-**Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see technical description in the next tab.
+**Note:** While this static vies is helpful, I recommend using the interactive LDAVis version to be found under `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`. For functionality and usage, see technical description.
 
 ## Topics over time
 
@@ -242,26 +233,6 @@ text_lda_gamma %>%
 rm(text_tidy, text_lda)
 ```
 
-
-## Technical Description
-
-### LDA Topic Modelling
-
-Topic modeling is a type of statistical modeling for discovering the abstract “topics” that occur in a collection of documents. Latent Dirichlet Allocation (LDA, [Blei et al., 2003](https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf?ref=https://githubhelp.com)) is an example of topic model and is used to classify text in a document to a particular topic. 
-
-LDA is a generative probabilistic model that assumes each topic is a mixture over an underlying set of words, and each document is a mixture of over a set of topic probabilities. It builds a topic per document model and words per topic model, modeled as Dirichlet distributions.
-
-### LDAVis
-
-[LDAvis](https://github.com/cpsievert/LDAvis) is a web-based interactive visualisation of topics estimated using LDA ([Sievert & Shirley, 2014](https://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf)). It provides a global view of the topics (and how they differ from each other), while at the same time allowing for a deep inspection of the terms most highly associated with each individual topic. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization. The visualisation has two basic pieces.
-
-The **left panel** visualise the topics as circles in the two-dimensional plane whose centres are determined by computing the Jensen–Shannon divergence between topics, and then by using multidimensional scaling to project the inter-topic distances onto two dimensions. Each topic’s overall prevalence is encoded using the areas of the circles.
-
-The **right panel** depicts a horizontal bar chart whose bars represent the individual terms that are the most useful for interpreting the currently selected topic on the left. A pair of overlaid bars represent both the corpus-wide frequency of a given term as well as the topic-specific frequency of the term.
-
-The $\lambda$ slider allows to rank the terms according to term relevance. By default, the terms of a topic are ranked in decreasing order according their topic-specific probability ( $\lambda$ = 1 ). Moving the slider allows to adjust the rank of terms based on much discriminatory (or "relevant") are for the specific topic. The suggested optimal value of $\lambda$ is 0.6.
-
-
 # Knowledge Bases: Co-Citation network analysis {.tabset}
 
 ```{r, include=FALSE}
@@ -286,7 +257,7 @@ C_nw %<>% left_join(com_names_cit %>% select(com, label, col), by = "com")
 ```
 
 
-**Note:** This analysis refers the co-citation analysis, where the cited references and not the original publications are the unit of analysis. See tab `Technical description`for additional explanations
+**Note:** This analysis refers the co-citation analysis, where the cited references and not the original publications are the unit of analysis. See  `Technical description`for additional explanations
 
 ## Knowledge Bases summary
 
@@ -365,7 +336,7 @@ The intuition here is that references which are frequently cited together are li
 
 ## Research Areas main summary
 
-This is arguably the more interesting part. Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. Again, method details to be found in the tab `Technical description`. As you will see, we identify the main research area, but also a set of adjacent research areas with some theoretical/methodological/application overlap.
+Here, we identify the literature's current knowledge frontier by carrying out a bibliographic coupling analysis of the publications in our corpus. This measure  uses bibliographical information of  publications to establish a similarity relationship between them. To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). Method details to be found in the `Technical description`. 
 
 ```{r, include=FALSE}
 M_bib <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% 
@@ -388,8 +359,6 @@ com_names_bib <- tibble(
 ```{r, include=FALSE}
 M_bib %<>% left_join(com_names_bib %>% select(com, label, col), by = "com")
 ```
-
-To identify communities in the field's knowledge frontier (labeled **research areas**) we again use the **Lovain Algorithm** (Blondel et al., 2008). We identify the following communities = research areas.
 
 ```{r, include=FALSE}
 ra_stats <- M_bib %>%
@@ -469,22 +438,6 @@ g_agg %E>%
                   caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (Jaccard weighted)')
 ```
 
-## Technical description
-In a bibliographic coupling network, the **coupling-strength** between publications is determined by the number of commonly cited references they share, assuming a common pool of references to indicate similarity in context, methods, or theory. Formally, the strength of the relationship between a publication pair $i$ and $j$ ($s_{i,j}^{bib}$) is expressed by the number of commonly cited references. 
-
-$$s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m}$$
-
-Since our corpus contains publications which differ strongly in terms of the number of cited references, we normalize the coupling strength by the Jaccard similarity coefficient. Here, we weight the intercept of two publications' bibliography (shared refeences) by their union (number of all references cited by either $i$ or $j$). It is bounded between zero and one, where one indicates the two publications to have an identical bibliography, and zero that they do not share any cited reference. Thereby, we prevent publications from having high coupling strength due to a large bibliography (e.g., literature surveys).
-
-$$S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}}$$
-
-More recent articles have a higher pool of possible references to co-cite to, hence they are more likely to be coupled. Consequently, bibliographic coupling represents a forward looking measure, and the method of choice to identify the current knowledge frontier at the point of analysis.
-
-<!-- ####################################################################################### -->
-<!-- ####################################################################################### -->
-<!-- ############################# NEXT PART ############################################### -->
-<!-- ####################################################################################### -->
-<!-- ####################################################################################### -->
 
 # Knowledge Bases, Research Areas & Topics Interaction
 
@@ -567,140 +520,6 @@ fig <- plot_ly(type = "sankey",
 ```{r, fig.height= 10, fig.width=12.5}
 fig
 ```
-
-<!-- ####################################################################################### -->
-<!-- ####################################################################################### -->
-<!-- ############################# NEXT PART ############################################### -->
-<!-- ####################################################################################### -->
-<!-- ####################################################################################### -->
-
-<!--- 
-# Department Position
-
-## Collaaboration
-
-```{r}
-nw_inst <- M %>% as_tibble() %>% metaTagExtraction(Field = "AU_UN") %>% 
-  select(XX, UT, PY, int_dept, AU_UN) %>% 
-  # Add department as own entry in AU_UN
-  mutate(AU_UN = ifelse(int_dept == TRUE, paste0(AU_UN, ';', var_inst, ' ', var_dept), AU_UN)) %>%
-  # Sepperate AU_UN for 2_m edgelist
-  separate_rows(AU_UN, sep = ';') %>%
-  # filter
-  drop_na(AU_UN) %>%
-  filter(!(AU_UN %in% c('', ' ', 'NA', 'NOTREPORTED', 'NOTDECLARED'))) %>%
-  # Only 1 link per paper, independent of author number
-  distinct(UT, AU_UN, .keep_all = TRUE) 
-```
-
-```{r}
-el_uni <- nw_inst %>% 
-  left_join(nw_inst %>% select(UT, AU_UN), by = 'UT') %>% 
-  rename(from = AU_UN.x, to = AU_UN.y) %>%
-  filter(from != to) %>%
-  group_by(from, to) %>%
-  summarise(weight = n()) %>%
-  ungroup()
-```
-
-```{r}
-g_uni <- el_uni %>% as_tbl_graph(directed = FALSE) %E>%
-  filter(weight >= cutof_edge_cit ) %N>%
-  filter(!node_is_isolated())
-```
-
-  
-g_cit <- g_cit %N>%
-  mutate(dgr = centrality_degree(weights = weight)) %N>%
-  filter(dgr >= cutof_node_cit) 
-
-# Further restrictions
-g_cit <- g_cit %N>% 
-  filter(percent_rank(dgr) >= cutof_node_pct_cit) %E>%
-  filter(percent_rank(weight) >= cutof_edge_pct_cit) %N>%
-  filter(!node_is_isolated())
-
-
-```{r}
-g_uni %>%
-  convert(to_local_neighborhood,
-                     node = which(.N()$name == paste0(var_inst, ' ', var_dept)),
-                     order = 1,
-                     mode = "all") %>%
-  ggraph(layout = "nicely") + 
-  geom_edge_link(aes(width = weight), alpha = 0.2, col = 'lightgreen')  + 
-  geom_node_point(aes(size = centrality_degree()), col = 'skyblue1')  + 
-  geom_node_text(aes(label = name, 
-                     size = centrality_degree(),
-                     filter = centrality_degree() >= centrality_degree()  %>% quantile(0.6)), repel = TRUE) +
-  theme_graph(base_family = "Arial") +
-  theme(legend.position = 'bottom')
-```
-
-# Trends
-
-## Topics
-
-```{r}
-# TODO: Solve earlier that it doesnt have to be loaded here again
-el_sim_topic <- readRDS(paste0('../../temp/text_LDA_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))  %>% tidy(matrix = "gamma") %>%
-  pairwise_similarity(document, topic, gamma, diag = FALSE, upper = TRUE)
-```
-
-```{r}
-# join with year = uni
-el_sim_topic %<>%
-  left_join(M %>% select(XX, PY), by = c('item1' = 'XX')) %>%
-  left_join(M %>% select(XX, PY), by = c('item2' = 'XX')) %>%
-  rename(PY_from = PY.x, PY_to = PY.y)
-```
-
-```{r}
-# decide for similarity past or future
-el_sim_topic %<>%
-  mutate(delta = PY_to - PY_from) %>%
-  mutate(sim_type = case_when(
-    delta == 0 ~ "present",
-    delta >= 1 ~ "future",
-    delta <= -1 ~ "past") 
-    )
-```
-
-
-```{r}
-# aggregate on document level
-pub_sim <- el_sim_topic %>%
-  group_by(item1, sim_type) %>%
-  summarise(sim = mean(similarity)) %>%
-  pivot_wider(names_from = sim_type, names_prefix = 'sim_', values_from = sim) %>%
-  drop_na()
-```
-
-```{r}
-uni_sim <- pub_sim %>%
-  inner_join(nw_inst %>% select(XX, AU_UN), by = c('item1' = 'XX')) %>%
-  group_by(AU_UN) %>%
-  summarise(sim_past = mean(sim_past),
-            sim_present = mean(sim_present),
-            sim_future = mean(sim_future),
-            n = n())
-```
-
-```{r}
-uni_sim %>%
-  slice_max(order_by = n, n = 100) %>%
-  ggplot(aes(x = sim_past, y = sim_future)) +
-  geom_point(aes(size = n), alpha = 0.25) +
-  geom_text_repel( 
-    data =uni_sim %>% slice_max(order_by = n, n = 5), # Filter data first
-    aes(label = AU_UN),
-    box.padding = 1, max.overlaps = Inf) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = 'snow3') 
-# + lims(x = c(0.625, 0.725), y = c(0.625, 0.725))
-```
-
-
---->
 
 # Endnotes
 
