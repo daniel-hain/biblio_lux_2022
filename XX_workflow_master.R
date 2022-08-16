@@ -146,6 +146,7 @@ for(k in 1:nrow(select_dept)){
 rm(list=setdiff(ls(), "select_dept"))
 
 for(k in 1:nrow(select_dept)){
+  #k = 5
   print(paste0('=======> Starting Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
   rmarkdown::render("R/92_descriptives_mapping.Rmd", quiet = TRUE, params = list(
     institute = select_dept[k, 'institute'] %>% pull(),
