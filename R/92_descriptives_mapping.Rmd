@@ -570,7 +570,7 @@ uni_sim <- read_rds(paste0('../../temp/uni_sim_', str_to_lower(var_inst), '_', s
 ```
 
 
-```{r, fig.height=3, fig.width=4}
+```{r, fig.height=5, fig.width=7.5}
 desc <- uni_sim %>% 
   filter(AU_UN == paste(var_inst, var_dept)) %>%
   mutate(desc = paste0('N: ', n, ' \n',
