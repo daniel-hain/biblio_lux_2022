@@ -89,8 +89,8 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-#var_inst <- 'LISER'
-#var_dept <- 'LM'
+#var_inst <- 'LIH'
+#var_dept <- 'DPH'
 ```
 
 ```{r, include=FALSE}
@@ -123,7 +123,7 @@ M <- M_all %>% filter(int_dept == TRUE)
 com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
 ```
 
-# Topic modelling {.tabset}
+# Topic modelling
 
 ```{r, include=FALSE}
 text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
@@ -151,8 +151,6 @@ text_lda_gamma %<>% inner_join(com_names_top %>% select(com, label, col), by = c
 ```
 
 
-## Topics over time
-
 ```{r, fig.width = 15, fig.height=7.5}
 text_lda_gamma %>%
   rename(weight = gamma) %>%
@@ -171,7 +169,7 @@ text_lda_gamma %>%
                   caption = 'Absolute topic appearance (left), Relative topic appearance (right)')
 ```
 
-```{r, fig.width=5}
+```{r, fig.width=15, fig.height=7.5}
 text_lda_gamma %>%
   rename(weight = gamma) %>%
   inner_join(M %>% select(XX, PY), by = c('document' = 'XX')) %>%
@@ -204,8 +202,8 @@ text_lda_gamma %>%
   group_by(label, PY) %>%
   summarise(impact = mean(impact)) %>%
   ggplot(aes(x = PY, y = impact, col = label)) +
-  geom_line() + 
-  geom_point() + 
+  geom_line(size = 2) +
+  geom_point(size = 4) +
   theme(legend.position = 'bottom') +
   labs(title = paste('Topic Impact:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
@@ -432,7 +430,7 @@ fig <- plot_ly(type = "sankey",
          margin = list(l = 50, r = 50, b = 100, t = 100, pad = 2)) 
 ```
 
-```{r, fig.height= 10, fig.width=12.5}
+```{r, fig.height= 10, fig.width=15}
 fig
 ```
 
@@ -457,20 +455,22 @@ g_inst <- el_inst %>% as_tbl_graph(directed = FALSE) %E>%
 ```
 
 
-```{r}
+```{r, fig.height= 10, fig.width=15}
 g_inst %>%
   convert(to_local_neighborhood,
                      node = which(.N()$name == paste0(var_inst, ' ', var_dept)),
                      order = 2,
-                     mode = "all") %>%
+                     mode = "all") %N>% 
+  mutate(cent_eg = centrality_eigen(weights = weight)) %>%
+  filter(name == paste(var_inst, var_dept)  | rank(-cent_eg) <= 100 ) %>%
   ggraph(layout = "fr") + 
   geom_edge_link(aes(width = weight,
                      color = .N()$name[from] == paste(var_inst, var_dept) | .N()$name[from] == paste(var_inst, var_dept))
                  , alpha = 0.25)  + 
-  geom_node_point(aes(size = centrality_degree()), col = 'steelblue1')  + 
+  geom_node_point(aes(size = cent_eg), col = 'steelblue1')  + 
   geom_node_text(aes(label = name, 
-                     size = centrality_degree(),
-                     filter = (centrality_degree() >= centrality_degree()  %>% quantile(0.8))), repel = TRUE) +
+                     size = cent_eg,
+                     filter = (cent_eg >= cent_eg  %>% quantile(0.8))), repel = TRUE) +
   theme_graph(base_family = "Arial") +
   theme(legend.position = 'bottom') +
   scale_edge_width_continuous(range = c(0.5, 5))  +
