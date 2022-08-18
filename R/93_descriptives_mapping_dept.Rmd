@@ -89,13 +89,13 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'LM'
+#var_inst <- 'LISER'
+#var_dept <- 'LM'
 ```
 
 ```{r, include=FALSE}
-#var_inst <- params$institute
-#var_dept <- params$department
+var_inst <- params$institute
+var_dept <- params$department
 ```
 
 # Introduction: `r var_inst` Department `r var_dept`
