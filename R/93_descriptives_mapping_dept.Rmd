@@ -322,16 +322,17 @@ M_bib %>%
 
 ```{r, include=FALSE}
 g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
-  arrange(com) # %>%
+  arrange(com) %N>%  mutate(com = com_names_bib %>% pull(label)) %E>%
+  mutate(type = 'Knowledge Base Similarity')
 #   mutate(name = names_ra %>% pull(com_ra_name),
 #          color = cols_ra)
 ```
 
+
 ```{r, fig.height= 7.5, fig.width=7.5}
 g_agg %E>% 
   filter(weight > 0 & from != to) %>%
-  filter(weight >= quantile(weight, 0.25) )  %N>%
-  mutate(com = com_names_bib %>% pull(label)) %>%
+  filter(weight >= quantile(weight, 0.25) )  %>%
   ggraph(layout = "circle") + 
   geom_edge_fan(strenght = 0.8, aes(width = weight), alpha = 0.2)  + 
   geom_node_point(aes(size = N, color = com))  + 
@@ -340,7 +341,7 @@ g_agg %E>%
   theme(legend.position = 'bottom') +
   scale_size(range = c(2,20)) +
   scale_color_brewer(palette = pal_ra) +
-  labs(title = paste('Research Area Connectivity:', var_inst, 'Dept.', var_dept, sep = ' '),
+  labs(title = paste('Research Area Similarity:', var_inst, 'Dept.', var_dept, sep = ' '),
                   subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
                   caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (Jaccard weighted)')
 ```
@@ -461,20 +462,22 @@ g_inst %>%
                      node = which(.N()$name == paste0(var_inst, ' ', var_dept)),
                      order = 2,
                      mode = "all") %N>% 
-  mutate(cent_eg = centrality_eigen(weights = weight)) %>%
-  filter(name == paste(var_inst, var_dept)  | rank(-cent_eg) <= 100 ) %>%
+  mutate(cent = centrality_degree(weights = weight)) %>%
+  filter(name == paste(var_inst, var_dept)  | rank(-cent) <= 100 ) %>%
   ggraph(layout = "fr") + 
   geom_edge_link(aes(width = weight,
-                     color = .N()$name[from] == paste(var_inst, var_dept) | .N()$name[from] == paste(var_inst, var_dept))
+                     color = .N()$name[from] == paste(var_inst, var_dept) | .N()$name[from] == paste(var_inst, var_dept),
+                     filter = (weight >= weight  %>% quantile(0.25)))
                  , alpha = 0.25)  + 
-  geom_node_point(aes(size = cent_eg), col = 'steelblue1')  + 
+  geom_node_point(aes(size = cent), col = 'steelblue1')  + 
   geom_node_text(aes(label = name, 
-                     size = cent_eg,
-                     filter = (cent_eg >= cent_eg  %>% quantile(0.8))), repel = TRUE) +
+                     size = cent,
+                     filter = (cent >= cent  %>% quantile(0.8))), repel = TRUE) +
   theme_graph(base_family = "Arial") +
   theme(legend.position = 'bottom') +
   scale_edge_width_continuous(range = c(0.5, 5))  +
-  scale_edge_colour_manual(values = c("grey", "red"), name = '1st degree') 
+  scale_edge_colour_manual(values = c("grey", "red"), name = '1st degree') +
+  scale_size(range = c(0.5,10)) 
 ```
 
 
