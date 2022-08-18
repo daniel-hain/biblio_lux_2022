@@ -36,27 +36,27 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_ud_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_ud.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_ud.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_ud.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_liser_ud.html)
 
 ## Department LC
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lc_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lc.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lc.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lc.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lc.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_liser_lc.html)
    
 ## Department LM
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_liser_lm_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_liser_lm.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_liser_lm.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lm.rds/index.html#topic=0&lambda=0.60&term=)   
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_liser_lm.rds/index.html#topic=0&lambda=0.60&term=)   
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_liser_lm.html)
 
 # LIH
 
@@ -65,36 +65,36 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dcr_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dcr.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dcr.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dcr.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_lih_dcr.html)
 
 ## Department DII
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dii_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dii.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dii.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dii.rds/index.html#topic=0&lambda=0.60&term=)   
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dii.rds/index.html#topic=0&lambda=0.60&term=) 
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_lih_dii.html)
 
 ## Department DPH
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_dph_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_dph.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_dph.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dph.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_dph.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_lih_dph.html)
    
 ## Department TMOH
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_lih_tmoh_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_lih_tmoh.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_lih_tmoh.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_tmoh.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_lih_tmoh.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_lih_tmoh.html)
 
 # LIST
 
@@ -103,24 +103,25 @@ https://docs.google.com/presentation/d/1Uwe9GgRLPbsLzanJEUYJwo83g7Sn6J7YlkTLeCVr
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_erin_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_erin.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_erin.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_erin.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_list_erin.html)
  
 ## Department ITIS
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_itis_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_itis.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_itis.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_itis.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_list_itis.html)
    
 ## Department MRT
 
 1. Seed selection
    * [Seed articels](https://github.com/daniel-hain/biblio_lux_2022/blob/master/output/seed/scopus_list_mrt_seed.csv)
 2. Field Mapping Results
-   * [Field Mapping: General Description](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_general_list_mrt.html)
    * [Field Mapping: Research Areas & Knowledge Bases](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_list_mrt.html)
-   * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_mrt.rds/index.html#topic=0&lambda=0.60&term=)
+      * [LDA Topic Modelling](https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_list_mrt.rds/index.html#topic=0&lambda=0.60&term=)
+   * [Field Mapping: Department position & specialization](https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping/field_mapping_dept_list_mrt.html)
+   

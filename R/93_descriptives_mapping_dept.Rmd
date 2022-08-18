@@ -1,0 +1,493 @@
+---
+title: "Luxembourg Research Evaluation 2022: Mapping of Knowledge Structure: Department intrnal"
+author: "Daniel S. Hain"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+params:
+    institute: 
+       value: null
+    department:
+       value: null
+---
+
+<!---
+# Add to YAML when reviewing
+  html_notebook:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+--->
+
+
+```{=html}
+<style type="text/css">
+.main-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+### Generic preamble
+#rm(list=ls())
+Sys.setenv(LANG = "en")
+options(scipen = 5)
+set.seed(1337)
+
+### Load packages  
+# general
+library(tidyverse)
+library(magrittr)
+
+# Kiblio & NW
+library(bibliometrix)
+library(tidygraph)
+library(ggraph)
+
+# NLP
+library(tidytext)
+
+# Dataviz
+library(plotly)
+library(ggforce)
+library(ggrepel)
+library(patchwork)
+
+# Knit
+library(knitr) # For display of the markdown
+library(kableExtra) # For table styling
+
+# own functions
+source("../functions/functions_basic.R")
+source("../functions/functions_summary.R")
+source("../functions/00_parameters.R")
+
+# Knitr options
+knitr::opts_chunk$set(echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+
+```{r, include=FALSE}
+var_inst <- 'LISER'
+var_dept <- 'LM'
+```
+
+```{r, include=FALSE}
+#var_inst <- params$institute
+#var_dept <- params$department
+```
+
+# Introduction: `r var_inst` Department `r var_dept`
+
+```{r, include=FALSE}
+# Load data
+M_all <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
+  distinct(UT, .keep_all = TRUE) %>% 
+  mutate(PY = as.numeric(PY),
+         period = ifelse(PY <= 2018, 1, 2)) %>%
+  filter(PY >= PY_min, PY <= PY_max) %>%
+  group_by(PY) %>%
+    mutate(TC_cohort_rank = percent_rank(TC)) %>%
+  ungroup() 
+```
+
+```{r}
+# Filter for department only.
+M <- M_all %>% filter(int_dept == TRUE)
+```
+
+
+
+```{r}
+com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
+```
+
+# Topic modelling {.tabset}
+
+```{r, include=FALSE}
+text_tidy <- readRDS(paste0('../../temp/text_tidy_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+text_lda <- readRDS(paste0('../../temp/text_LDA_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) 
+
+text_lda_beta <- text_lda %>% tidy(matrix = "beta") 
+text_lda_gamma <- text_lda %>% tidy(matrix = "gamma")
+```
+
+```{r, include=FALSE}
+com_names_top <- tibble( 
+  com = 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()),
+  type = 'TP',
+  col = com %>% gg_color_select(pal = pal_tp)) %>%
+  left_join(com_labels %>% filter(type == 'TP') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('TP ', com, ': unlabeled'), label))
+            
+# # 1st alternative: Number them 1-n
+# paste(type, 1:(text_lda_gamma %>% pull(topic) %>% n_distinct()))           
+```
+
+```{r, include=FALSE}
+text_lda_beta %<>%  inner_join(com_names_top %>% select(com, label, col), by = c('topic' = 'com'))
+text_lda_gamma %<>% inner_join(com_names_top %>% select(com, label, col), by = c('topic' = 'com'))
+```
+
+
+## Topics over time
+
+```{r, fig.width = 15, fig.height=7.5}
+text_lda_gamma %>%
+  rename(weight = gamma) %>%
+  inner_join(M %>% select(XX, PY) %>%
+              filter(int_dept = TRUE), by = c('document' = 'XX')) %>%
+  mutate(PY = as.numeric(PY)) %>%
+  group_by(PY, label) %>% summarise(weight = sum(weight)) %>% ungroup() %>%
+  group_by(PY) %>% mutate(weight_PY = sum(weight)) %>% ungroup() %>%
+  mutate(weight_rel = weight / weight_PY) %>%
+  select(PY, label, weight, weight_rel) %>%
+  filter(PY >= PY_min & PY <= PY_max) %>%
+  arrange(PY, label) %>%
+  plot_summary_timeline(y1 = weight, y2 = weight_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label,  label = TRUE, pal = pal_tp, y1_text = "Topic popularity annualy", y2_text = "Share of topic annually") +
+  plot_annotation(title = paste('Topic Modelling: Research Field of', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute topic appearance (left), Relative topic appearance (right)')
+```
+
+```{r, fig.width=5}
+text_lda_gamma %>%
+  rename(weight = gamma) %>%
+  inner_join(M %>% select(XX, PY), by = c('document' = 'XX')) %>%
+  mutate(PY = as.numeric(PY)) %>%
+  group_by(PY, label) %>% summarise(weight = sum(weight)) %>% ungroup() %>%
+  group_by(PY) %>% mutate(rank = max(rank(weight)) - rank(weight) + 1) %>% ungroup() %>%
+  ggplot(aes(x = PY, y = rank, group = label, col = label)) +
+  geom_line(size = 2) +
+  geom_point(size = 4) +
+  scale_y_reverse(breaks = 1:nrow(com_names_top)) +
+  theme(legend.position = 'bottom') + 
+  labs(title = paste('Topic Modelling:', var_inst, 'Dept.', var_dept, sep = ' '),
+       subtitle = 'Rank of topic prominence in department publications',
+       caption = '1 = Most prominent topic',
+       x = 'Year',
+       y = 'Rank',
+       color = '')
+```
+
+```{r, fig.width = 15, fig.height=7.5}
+text_lda_gamma %>%
+  rename(weight = gamma) %>%
+  inner_join(M %>% select(XX, PY, TC_cohort_rank) %>%
+              filter(int_dept = TRUE), by = c('document' = 'XX')) %>%
+  # mutate(impact = weight* TC_cohort_rank) %>%
+  mutate(impact = TC_cohort_rank >= 0.9) %>%
+  group_by(PY) %>%
+  filter(percent_rank(weight) >= 0.5) %>%
+  ungroup() %>%
+  group_by(label, PY) %>%
+  summarise(impact = mean(impact)) %>%
+  ggplot(aes(x = PY, y = impact, col = label)) +
+  geom_line() + 
+  geom_point() + 
+  theme(legend.position = 'bottom') +
+  labs(title = paste('Topic Impact:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  x = 'Year',
+                  y = 'Topic Impact',
+                  caption = 'Topic Impact refers to the share of publications within the cohort top-10% cited publications associated with the topic.',
+                  )
+```
+
+
+
+
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+
+```{r, include=FALSE}
+rm(text_tidy, text_lda)
+```
+
+
+# Knowledge Bases: Co-Citation network analysis 
+
+```{r, include=FALSE}
+C_nw <- readRDS(paste0('../../temp/C_nw_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))  %>%
+  drop_na(com)
+```
+
+```{r, include=FALSE}
+com_names_cit <- tibble( 
+  com = 1:(C_nw %>% pull(com) %>% n_distinct()),
+  type = 'KB',
+  col = com %>% gg_color_select(pal = pal_kb)) %>%
+  left_join(com_labels %>% filter(type == 'KB') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('KB ', com, ': unlabeled'), label))
+
+# # 1st alternative: Number them 1-n
+# paste(type, 1:(C_nw %>% pull(com) %>% n_distinct()))
+```
+
+```{r, include=FALSE}
+C_nw %<>% left_join(com_names_cit %>% select(com, label, col), by = "com")
+```
+
+```{r, include=FALSE}
+el_2m <- readRDS(paste0('../../temp/el_2m_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>%
+  drop_na()
+```
+
+
+```{r, include=FALSE}
+cit_com_year <- el_2m %>%
+  count(com_cit, PY, name = 'TC') %>%
+  group_by(PY) %>%
+  mutate(TC_rel = TC / sum(TC)) %>%
+  ungroup() %>%
+  arrange(PY, com_cit) %>%
+  left_join(com_names_cit , by = c('com_cit' = 'com')) %>% 
+  complete(label, PY, fill = list(TC = 0, TC_rel = 0))
+```
+
+```{r, fig.width = 15, fig.height=7.5}
+cit_com_year %>%
+  plot_summary_timeline(y1 = TC, y2 = TC_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, pal = pal_kb, label = TRUE,
+                        y1_text = "Number citations recieved annually",  y2_text = "Share of citations recieved annually") +
+  plot_annotation(title = paste('Knowledge Bses:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute knowledge base appearance (left), Relative knowledge base appearance (right)')
+```
+
+# Research Areas: Bibliographic coupling analysis 
+
+```{r, include=FALSE}
+M_bib_all <- readRDS(paste0('../../temp/M_bib_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% 
+  as_tibble() %>%
+  drop_na(com)
+```
+
+```{r, include=FALSE}
+# Filter for department only.
+M_bib <- M_bib_all %>% semi_join(M, by = 'XX')
+```
+
+```{r, include=FALSE}
+com_names_bib <- tibble( 
+  com = 1:(M_bib %>% pull(com) %>% n_distinct()),
+  type = 'RA',
+  col = com %>% gg_color_select(pal = pal_ra)) %>%
+  left_join(com_labels %>% filter(type == 'RA') %>% select(com, label), by = 'com') %>%
+  mutate(label = ifelse(is.na(label), paste0('RA ', com, ': unlabeled'), label))
+```
+
+```{r, include=FALSE}
+M_bib %<>% left_join(com_names_bib %>% select(com, label, col), by = "com")
+```
+
+
+```{r, fig.width = 15, fig.height=7.5}
+M_bib %>%
+  left_join(M %>% select(XX, PY), by = 'XX') %>%
+  mutate(PY = PY %>% as.numeric()) %>%
+  group_by(label, PY) %>% summarise(n = n()) %>% ungroup() %>%
+  group_by(PY) %>% mutate(n_PY = sum(n)) %>% ungroup() %>%
+  mutate(n_rel = n / n_PY) %>%
+  select(label, PY, n, n_rel) %>%
+  arrange(label, PY) %>% 
+  complete(label, PY, fill = list(n = 0, n_rel = 0)) %>%
+  plot_summary_timeline(y1 = n, y2 = n_rel, t = PY, t_min = PY_min, t_max = PY_max, by = label, label = TRUE, pal = pal_ra,
+                        y1_text = "Number publications annually", y2_text = "Share of publications annually") +
+  plot_annotation(title = paste('Research Areas:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Absolute research area appearance (left), Relative research area appearance (right)')
+```
+
+```{r, include=FALSE}
+g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
+  arrange(com) # %>%
+#   mutate(name = names_ra %>% pull(com_ra_name),
+#          color = cols_ra)
+```
+
+```{r, fig.height= 7.5, fig.width=7.5}
+g_agg %E>% 
+  filter(weight > 0 & from != to) %>%
+  filter(weight >= quantile(weight, 0.25) )  %N>%
+  mutate(com = com_names_bib %>% pull(label)) %>%
+  ggraph(layout = "circle") + 
+  geom_edge_fan(strenght = 0.8, aes(width = weight), alpha = 0.2)  + 
+  geom_node_point(aes(size = N, color = com))  + 
+  geom_node_text(aes(label = com), repel = TRUE) +
+  theme_graph(base_family = "Arial") +
+  theme(legend.position = 'bottom') +
+  scale_size(range = c(2,20)) +
+  scale_color_brewer(palette = pal_ra) +
+  labs(title = paste('Research Area Connectivity:', var_inst, 'Dept.', var_dept, sep = ' '),
+                  subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+                  caption = 'Nodes = Identified Research Areas; Edges: Bibliographic coupling strenght (Jaccard weighted)')
+```
+
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+
+# Knowledge Bases, Research Areas & Topics Interaction
+
+```{r, include=FALSE}
+# Nodes
+nl_3m <- com_names_bib %>%
+  bind_rows(com_names_cit) %>%
+  bind_rows(com_names_top) %>%
+  rename(name = label,
+         com_nr = com) %>%
+  relocate(name)
+
+# Edges
+el_2m_kb <- el_2m %>%
+  select(-from, -to) %>%
+  inner_join(com_names_cit %>% select(com, label), by = c('com_cit' = 'com')) %>%
+  inner_join(com_names_bib %>% select(com, label, col), by = c('com_bib' = 'com')) %>%
+  mutate(weight = 1) %>%
+  rename(from = label.x,
+         to = label.y) %>% # generic
+  select(from, to, weight, col, PY) %>% 
+  drop_na() %>% 
+  mutate(period = ifelse(PY <= 2018, 1, 2)) %>%
+  count(from, to, col, period, wt = weight, name = 'weight') %>%
+  filter(percent_rank(weight) >= 0.25) %>%
+  weight_jaccard(i = from, j = to, w = weight) %>% 
+  select(-weight)
+
+el_2m_topic <- text_lda_gamma %>% select(-topic, -col) %>%
+  left_join(M_bib %>% select(XX, com) %>% drop_na(com), by = c('document' = 'XX')) %>%
+  inner_join(com_names_bib %>% select(com, label, col), by = c('com' = 'com')) %>%
+  rename(from = label.y,
+         to = label.x,
+         weight = gamma) %>% # generic
+  select(from, to, weight, col) %>% 
+  drop_na() %>% 
+  count(from, to, col, wt = weight, name = 'weight') %>%
+  filter(percent_rank(weight) >= 0.25) %>%
+  weight_jaccard(i = from, j = to, w = weight) %>% select(-weight)
+
+# graph
+g_3m <- el_2m_kb %>% 
+  bind_rows(el_2m_topic) %>%
+  as_tbl_graph(directed = TRUE) %N>%
+  left_join(nl_3m, by = 'name') %>%
+  mutate(
+    level = case_when(
+      type == "KB" ~ 1,
+      type == "RA" ~ 2,
+      type == "TP" ~ 3),
+    coord_y = 0.1,
+    coord_x = 0.001 + 1/(max(level)-1) * (level-1)
+    )  %N>%
+  filter(!is.na(level))
+```
+
+```{r, include=FALSE}
+## Build sankey plot
+fig <- plot_ly(type = "sankey", 
+               orientation = "h",
+               arrangement = "snap",
+  node = list(
+    label = g_3m %N>% as_tibble() %>% pull(name),
+    x = g_3m %N>% as_tibble() %>% pull(coord_x),
+    y = g_3m %N>% as_tibble() %>% pull(coord_y),
+    color = g_3m %N>% as_tibble() %>% pull(col), 
+    pad = 4
+  ), 
+  link = list(
+    source = (g_3m %E>% as_tibble() %>% pull(from)) -1,
+    target = (g_3m %E>% as_tibble() %>% pull(to)) -1,
+    value =  g_3m %E>% as_tibble() %>% pull(weight_jac),
+    color = g_3m %E>% as_tibble() %>% pull(col) %>% col2rgb() %>% as.matrix() %>% t() %>% as_tibble() %>% 
+      mutate(col_rgb = paste0('rgba(', red, ',' , green, ',', blue, ',0.75)')) %>%  pull(col_rgb)
+    )
+) %>% 
+  layout(title = paste('Knowledge Bases, Research Areas & Topics:', var_inst, 'Dept.', var_dept, sep = ' '),
+         margin = list(l = 50, r = 50, b = 100, t = 100, pad = 2)) 
+```
+
+```{r, fig.height= 10, fig.width=12.5}
+fig
+```
+
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+<!-- ############################# NEXT PART ############################################### -->
+<!-- ####################################################################################### -->
+<!-- ####################################################################################### -->
+
+
+# Collaboration 
+
+```{r}
+el_inst <- readRDS(paste0('../../temp/el_inst_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+```
+
+
+```{r}
+g_inst <- el_inst %>% as_tbl_graph(directed = FALSE) %E>%
+  filter(weight >= cutof_edge_cit ) %N>%
+  filter(!node_is_isolated())
+```
+
+
+```{r}
+g_inst %>%
+  convert(to_local_neighborhood,
+                     node = which(.N()$name == paste0(var_inst, ' ', var_dept)),
+                     order = 2,
+                     mode = "all") %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width = weight,
+                     color = .N()$name[from] == paste(var_inst, var_dept) | .N()$name[from] == paste(var_inst, var_dept))
+                 , alpha = 0.25)  + 
+  geom_node_point(aes(size = centrality_degree()), col = 'steelblue1')  + 
+  geom_node_text(aes(label = name, 
+                     size = centrality_degree(),
+                     filter = (centrality_degree() >= centrality_degree()  %>% quantile(0.8))), repel = TRUE) +
+  theme_graph(base_family = "Arial") +
+  theme(legend.position = 'bottom') +
+  scale_edge_width_continuous(range = c(0.5, 5))  +
+  scale_edge_colour_manual(values = c("grey", "red"), name = '1st degree') 
+```
+
+
+# Endnotes
+
+All results are preliminary so far...
+
+```{r}
+# After knitted do this
+#file.rename(from = "92_descriptives_mapping.nb.html", to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html'))
+```
+
+
+
+
+

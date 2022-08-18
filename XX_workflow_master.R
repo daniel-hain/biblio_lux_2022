@@ -124,20 +124,6 @@ for(k in 1:nrow(select_dept)){
 # 9. Run 12_preprocessing_all
 # --> 11. Create all reports
 
-##########
-### Field mapping general
-##########
-
-rm(list=setdiff(ls(), "select_dept"))
-
-for(k in 1:nrow(select_dept)){
-  print(paste0('=======> Starting Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
-  rmarkdown::render("R/91_descriptives_general.Rmd", quiet = TRUE, params = list(
-    institute = select_dept[k, 'institute'] %>% pull(),
-    department = select_dept[k, 'department'] %>% pull()),
-    output_file = paste0('../output/field_mapping/field_mapping_general_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
-  print(paste0('=======> Finished Processing ',k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
-}
 
 ##########
 ### Field mapping bibliometric categorization
@@ -155,6 +141,20 @@ for(k in 1:nrow(select_dept)){
   print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
 
+##########
+### Field mapping bibliometric categorization
+##########
 
+rm(list=setdiff(ls(), "select_dept"))
+
+for(k in 1:nrow(select_dept)){
+ # k = 3
+  print(paste0('=======> Starting Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
+  rmarkdown::render("R/93_descriptives_mapping_dept.Rmd", quiet = TRUE, params = list(
+    institute = select_dept[k, 'institute'] %>% pull(),
+    department = select_dept[k, 'department'] %>% pull()),
+    output_file = paste0('../output/field_mapping/field_mapping_dept_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
+  print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
+}
 
 
