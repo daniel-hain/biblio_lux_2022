@@ -31,9 +31,7 @@ library(tidyverse)
 ###########################################################################################
 
 # Use all or filter for what you need
-select_dept <- read_csv2('../data/names_inst_dept.csv') #%>% 
-  #filter(institute %in% c('LISER', 'LIST', 'LIH')) %>% 
-  #filter(department %in% c('ERIN'))
+select_dept <- read_csv2('../data/names_inst_dept.csv') 
 
 ###########################################################################################
 ########################### Create department 
@@ -142,13 +140,13 @@ for(k in 1:nrow(select_dept)){
 }
 
 ##########
-### Field mapping bibliometric categorization
+### Field mapping department level
 ##########
 
 rm(list=setdiff(ls(), "select_dept"))
 
 for(k in 1:nrow(select_dept)){
- # k = 3
+  #k = 10
   print(paste0('=======> Starting Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
   rmarkdown::render("R/93_descriptives_mapping_dept.Rmd", quiet = TRUE, params = list(
     institute = select_dept[k, 'institute'] %>% pull(),
@@ -157,4 +155,4 @@ for(k in 1:nrow(select_dept)){
   print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
 
-
+rm(list=setdiff(ls(), "select_dept"))

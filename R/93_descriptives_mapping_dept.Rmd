@@ -107,7 +107,7 @@ knitr::opts_chunk$set(echo = FALSE,
 
 ```{r, include=FALSE}
 #var_inst <- 'LIH'
-#var_dept <- 'DPH'
+#var_dept <- 'TMOH'
 ```
 
 ```{r, include=FALSE}
@@ -364,8 +364,9 @@ M_bib %>%
 ```
 
 ```{r, include=FALSE}
-g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>%
-  arrange(com) %N>%  mutate(com = com_names_bib %>% pull(label)) %E>%
+g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>% 
+  left_join(com_names_bib, by = 'com') %N>%
+  mutate(com = com %>% factor()) %E>%
   mutate(type = 'Knowledge Base Similarity')
 #   mutate(name = names_ra %>% pull(com_ra_name),
 #          color = cols_ra)
