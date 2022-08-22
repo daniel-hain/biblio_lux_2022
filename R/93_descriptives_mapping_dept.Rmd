@@ -1,5 +1,5 @@
 ---
-title: "Luxembourg Research Evaluation 2022: Mapping of Knowledge Structure: Department intrnal"
+title: "Luxembourg Research Institute Evaluation 2022: Mapping of Knowledge Structure: Department internal"
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -9,6 +9,7 @@ output:
     df_print: paged
     toc: false
     toc_depth: 2
+    number_sections: true
     toc_float:
       collapsed: false
 params:
@@ -19,6 +20,22 @@ params:
 ---
 
 <!---
+# Add to YAML when compiling html
+  html_document:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+
+# Add when compiling pdf
+    pdf_document:
+    toc: true
+    toc_depth: 2
+
+
 # Add to YAML when reviewing
   html_notebook:
     theme: flatly
@@ -100,6 +117,34 @@ var_dept <- params$department
 
 # Introduction: `r var_inst` Department `r var_dept`
 
+## Purpose & Structure
+
+This document provides additional analysis and visualizations regarding the Luxembourg Research Institute Evaluation 2022 of  `r var_inst` Department `r var_dept`. Its purpose is:
+
+* To map the broader research community and distinct research field the department contributes to.
+* Identify core knowledge bases, research areas gtrends and topics.
+* Highlight the positioning of the department within this dynamics.
+
+It is structured as follows:
+
+1. **Topics:** Further information regarding the departments research topics and their development
+2. **Knowledge Bases:** Further information regarding the departments knowledge bases and their development
+3. **Research Areas:** Further information regarding the departments research areas and their development
+4. **KB-RA-TP interaction:** Joint visualization of knowledge bases, research areas, and topics.
+5. **Specialization:** Departments research area and topic specialization compared to the broader research field.
+6. **Collaboration:** Co-Authorship networks to other research institutions.
+7. **TEchnical description:** Further guidance regarding concepts, methods, indicators, techniques, and workflows.
+
+## Further resources
+
+This document and further factlitating information can be found online under:
+
+* This document: `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html')`
+* Mapping of broad research field: `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/field_mapping_dept_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html')`
+* Interactive Topic Modelling: `r paste0('https://daniel-hain.github.io/biblio_lux_2022/output/topic_modelling/LDAviz_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds/index.html#topic=1&lambda=0.60&term=')`
+* The method for the research-field-mapping can be reviewed here: [Rakas, M., & Hain, D. S. (2019). The state of innovation system research: What happens beneath the surface?. Research Policy, 48(9), 103787.](https://doi.org/10.1016/j.respol.2019.04.011)
+
+
 ```{r, include=FALSE}
 # Load data
 M_all <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %>% as_tibble() %>% 
@@ -116,8 +161,6 @@ M_all <- readRDS(paste0('../../temp/M_', str_to_lower(var_inst), '_', str_to_low
 # Filter for department only.
 M <- M_all %>% filter(int_dept == TRUE)
 ```
-
-
 
 ```{r}
 com_labels <- read_csv2('../../data/community_labeling.csv')  %>% filter(institute == var_inst, department == var_dept) %>% arrange(institute, department, type, com) %>% mutate(label = ifelse(is.na(label), paste0(type, ' ', com, ': unlabeled'), paste0(type, ' ', com, ': ', label)))
@@ -326,6 +369,10 @@ g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', st
   mutate(type = 'Knowledge Base Similarity')
 #   mutate(name = names_ra %>% pull(com_ra_name),
 #          color = cols_ra)
+
+## TODO: INclude topic similarity
+## TODO: INclude topic similarity
+## TODO: INclude topic similarity
 ```
 
 
@@ -480,10 +527,46 @@ g_inst %>%
   scale_size(range = c(0.5,10)) 
 ```
 
+<!---
+# Technical description
 
-# Endnotes
 
-All results are preliminary so far...
+## LDA Topic Modelling
+
+Topic modeling is a type of statistical modeling for discovering the abstract “topics” that occur in a collection of documents. Latent Dirichlet Allocation (LDA, [Blei et al., 2003](https://www.jmlr.org/papers/volume3/blei03a/blei03a.pdf?ref=https://githubhelp.com)) is an example of topic model and is used to classify text in a document to a particular topic. 
+
+LDA is a generative probabilistic model that assumes each topic is a mixture over an underlying set of words, and each document is a mixture of over a set of topic probabilities. It builds a topic per document model and words per topic model, modeled as Dirichlet distributions.
+
+### LDAVis
+
+[LDAvis](https://github.com/cpsievert/LDAvis) is a web-based interactive visualisation of topics estimated using LDA ([Sievert & Shirley, 2014](https://nlp.stanford.edu/events/illvi2014/papers/sievert-illvi2014.pdf)). It provides a global view of the topics (and how they differ from each other), while at the same time allowing for a deep inspection of the terms most highly associated with each individual topic. The package extracts information from a fitted LDA topic model to inform an interactive web-based visualization. The visualisation has two basic pieces.
+
+The **left panel** visualise the topics as circles in the two-dimensional plane whose centres are determined by computing the Jensen–Shannon divergence between topics, and then by using multidimensional scaling to project the inter-topic distances onto two dimensions. Each topic’s overall prevalence is encoded using the areas of the circles.
+
+The **right panel** depicts a horizontal bar chart whose bars represent the individual terms that are the most useful for interpreting the currently selected topic on the left. A pair of overlaid bars represent both the corpus-wide frequency of a given term as well as the topic-specific frequency of the term.
+
+The $\lambda$ slider allows to rank the terms according to term relevance. By default, the terms of a topic are ranked in decreasing order according their topic-specific probability ( $\lambda$ = 1 ). Moving the slider allows to adjust the rank of terms based on much discriminatory (or "relevant") are for the specific topic. The suggested optimal value of $\lambda$ is 0.6.
+
+## Research Areas: 
+In a bibliographic coupling network, the **coupling-strength** between publications is determined by the number of commonly cited references they share, assuming a common pool of references to indicate similarity in context, methods, or theory. Formally, the strength of the relationship between a publication pair $i$ and $j$ ($s_{i,j}^{bib}$) is expressed by the number of commonly cited references. 
+
+$$s_{i,j}^{bib} = \sum_m c_{i,m} c_{j,m}$$
+
+Since our corpus contains publications which differ strongly in terms of the number of cited references, we normalize the coupling strength by the Jaccard similarity coefficient. Here, we weight the intercept of two publications' bibliography (shared refeences) by their union (number of all references cited by either $i$ or $j$). It is bounded between zero and one, where one indicates the two publications to have an identical bibliography, and zero that they do not share any cited reference. Thereby, we prevent publications from having high coupling strength due to a large bibliography (e.g., literature surveys).
+
+$$S_{i,j}^{jac-bib} =\frac{C(i \cap j)}{C(i \cup j)} = \frac{s_{i,j}^{bib}}{c_i + c_j - s_{i,j}^{bib}}$$
+
+More recent articles have a higher pool of possible references to co-cite to, hence they are more likely to be coupled. Consequently, bibliographic coupling represents a forward looking measure, and the method of choice to identify the current knowledge frontier at the point of analysis.
+
+
+## Knowledge Bases
+In a co-cittion network, the strength of the relationship between a reference pair $m$ and $n$ ($s_{m,n}^{coc}$) is expressed by the number of publications $C$ which are jointly citing reference $m$ and $n$. 
+
+$$s_{m,n}^{coc} = \sum_i c_{i,m} c_{i,n}$$
+
+The intuition here is that references which are frequently cited together are likely to share commonalities in theory, topic, methodology, or context. It can be interpreted as a measure of similarity as evaluated by other researchers that decide to jointly cite both references. Because the publication process is time-consuming, co-citation is a backward-looking measure, which is appropriate to map the relationship between core literature of a field.
+
+--->
 
 ```{r}
 # After knitted do this

@@ -3,6 +3,7 @@ title: "Luxembourg Research Evaluation 2022: Field Mapping of Knowledge Structur
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
+# Add to YAML when compiling html
   html_document:
     theme: flatly
     code_folding: hide
@@ -19,6 +20,22 @@ params:
 ---
 
 <!---
+# Add to YAML when compiling html
+  html_document:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
+    toc: false
+    toc_depth: 2
+    toc_float:
+      collapsed: false
+
+# Add when compiling pdf
+    pdf_document:
+    toc: true
+    toc_depth: 2
+
+
 # Add to YAML when reviewing
   html_notebook:
     theme: flatly
@@ -471,7 +488,7 @@ g_agg %E>%
   geom_edge_fan(strenght = 0.8, aes(width = weight), alpha = 0.2)  + 
   geom_node_point(aes(size = N, color = com))  + 
   geom_node_text(aes(label = com), repel = TRUE) +
-  theme_graph(base_family = "Arial") +
+  #theme_graph(base_family = "Arial") +
   theme(legend.position = 'bottom') +
   scale_size(range = c(2,20)) +
   scale_color_brewer(palette = pal_ra) +
