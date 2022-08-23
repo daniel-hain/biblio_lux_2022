@@ -3,10 +3,15 @@ title: "Appendix B: Luxembourg Research Institute Evaluation 2022: Mapping of Kn
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-   bookdown::pdf_document2: 
-    fig_caption: true
+  html_document:
+    theme: flatly
+    code_folding: hide
+    df_print: paged
     number_sections: true
-    global_numbering: true
+    toc: false
+    toc_depth: 3
+    toc_float:
+      collapsed: false
 params:
     institute: 
        value: null
@@ -637,8 +642,8 @@ data %>%
   filter(type == 'Article') %>%
   mutate(journal_title = journal_title %>% str_replace_all("[^[:alnum:]]", " ") ) %>%
   count(journal_title, sort = TRUE) %>%
-    kable(format = 'latex', booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht')
-  # %>% kable(booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht') 
+    #kable(format = 'latex', booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht')
+    kable(booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht') 
 }
 ```
 
