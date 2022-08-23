@@ -99,13 +99,13 @@ knitr::opts_chunk$set(echo = FALSE,
 <!-- ####################################################################################### -->
 
 ```{r, include=FALSE}
-var_inst <- 'LISER'
-var_dept <- 'UD'
+#var_inst <- 'LISER'
+#var_dept <- 'UD'
 ```
 
 ```{r, include=FALSE}
-#var_inst <- params$institute
-#var_dept <- params$department
+var_inst <- params$institute
+var_dept <- params$department
 ```
 
 # Introduction: Mapping of broad research field around `r var_inst` Department `r var_dept`
@@ -572,60 +572,6 @@ fig <- plot_ly(type = "sankey",
 fig
 ```
 
-# Trends (Experimantal)
-
-```{r}
-uni_sim <- read_rds(paste0('../../temp/uni_sim_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
-```
-
-
-```{r, fig.height=5, fig.width=7.5}
-desc <- uni_sim %>% 
-  filter(AU_UN == paste(var_inst, var_dept)) %>%
-  mutate(desc = paste0('N: ', n, ' \n',
-                       'Similarity to past:', sim_past %>% round(2), ' \n',
-                       'Similarity to future: ', sim_future %>% round(2), ' \n',
-                       'Lead-Lag Score: ', future_trend %>% round(2))) %>% pull(desc)
-  
-  
-uni_sim %>%
-  slice_max(order_by = n, n = 100) %>%
-  ggplot(aes(x = sim_past, y = sim_future)) +
-  geom_mark_ellipse(aes(filter = AU_UN == paste(var_inst, var_dept), label = AU_UN, fill = 'red1'), description = desc) + guides(fill = FALSE) +
-  #geom_point(data = uni_sim %>% filter(AU_UN == paste(var_inst, var_dept)), 
-  #           aes(size = n), col = 'darkred') + 
-  geom_point(aes(size = n, col = future_trend), alpha = 0.5) +
-  geom_text_repel( 
-    data =uni_sim %>% slice_max(order_by = n, n = 5) %>% filter(AU_UN != paste(var_inst, var_dept)), # Filter data first
-    aes(label = AU_UN),
-    box.padding = 1, max.overlaps = Inf) +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = 'snow3') +
-  scale_colour_gradient(low = "blue", high = "red", name = "Lead-Lag Score") +
-  theme(legend.position = 'bottom') +
-  labs(x = 'Similarity to past',
-       y = 'Similarity to future',
-       title = paste('Field Lead-Lag Analysis:', var_inst, 'Dept.', var_dept, sep = ' '),
-       subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
-       caption = 'x and y axis')
-# + lims(x = c(0.625, 0.725), y = c(0.625, 0.725))
-```
-<!---
-# Network & Collaboration
-
-g_cit <- g_cit %N>%
-  mutate(dgr = centrality_degree(weights = weight)) %N>%
-  filter(dgr >= cutof_node_cit) 
-
-g_cit <- g_cit %N>% 
-  filter(percent_rank(dgr) >= cutof_node_pct_cit) %E>%
-  filter(percent_rank(weight) >= cutof_edge_pct_cit) %N>%
-  filter(!node_is_isolated())
-
---->
-
-# Endnotes
-
-All results are preliminary so far...
 
 ```{r}
 # After knitted do this

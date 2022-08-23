@@ -3,15 +3,10 @@ title: "Appendix B: Luxembourg Research Institute Evaluation 2022: Mapping of Kn
 author: "Daniel S. Hain"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document:
-    theme: flatly
-    code_folding: hide
-    df_print: paged
+   bookdown::pdf_document2: 
+    fig_caption: true
     number_sections: true
-    toc: false
-    toc_depth: 3
-    toc_float:
-      collapsed: false
+    global_numbering: true
 params:
     institute: 
        value: null
@@ -32,7 +27,6 @@ params:
       collapsed: false
 
 # Add when compiling pdf
-# Add to YAML when compiling html
    bookdown::pdf_document2: 
     fig_caption: true
     number_sections: true
@@ -375,7 +369,7 @@ M_bib %>%
 ```{r, include=FALSE}
 g_agg <- readRDS(paste0('../../temp/g_bib_agg_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds')) %N>% 
   left_join(com_names_bib, by = 'com') %N>%
-  mutate(com = com %>% factor()) %E>%
+  mutate(label = label %>% factor()) %E>%
   mutate(type = 'Knowledge Base Similarity')
 #   mutate(name = names_ra %>% pull(com_ra_name),
 #          color = cols_ra)
@@ -395,8 +389,8 @@ g_agg %E>%
   filter(weight >= quantile(weight, 0.25) )  %>%
   ggraph(layout = "circle") + 
   geom_edge_fan(strenght = 0.8, aes(width = weight), alpha = 0.2)  + 
-  geom_node_point(aes(size = N, color = com))  + 
-  geom_node_text(aes(label = com), repel = TRUE) +
+  geom_node_point(aes(size = N, color = label))  + 
+  geom_node_text(aes(label = label), repel = TRUE) +
   #theme_graph(base_family = "Arial") +
   theme(legend.position = 'bottom') +
   scale_size(range = c(2,20)) +
@@ -499,12 +493,52 @@ This plot shows the connection of publications in the research areas to knowledg
 fig
 ```
 
+
+
+# Trends 
+
+```{r}
+uni_sim <- read_rds(paste0('../../temp/uni_sim_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.rds'))
+```
+
+## Lead-Lag Analysis 
+
+```{r, fig.height=5, fig.width=7.5}
+desc <- uni_sim %>% 
+  filter(AU_UN == paste(var_inst, var_dept)) %>%
+  mutate(desc = paste0('N: ', n, ' \n',
+                       'Similarity to past:', sim_past %>% round(2), ' \n',
+                       'Similarity to future: ', sim_future %>% round(2), ' \n',
+                       'Lead-Lag Score: ', future_trend %>% round(2))) %>% pull(desc)
+  
+  
+uni_sim %>%
+  slice_max(order_by = n, n = 100) %>%
+  ggplot(aes(x = sim_past, y = sim_future)) +
+  geom_mark_ellipse(aes(filter = AU_UN == paste(var_inst, var_dept), label = AU_UN, fill = 'red1'), description = desc) + guides(fill = FALSE) +
+  #geom_point(data = uni_sim %>% filter(AU_UN == paste(var_inst, var_dept)), 
+  #           aes(size = n), col = 'darkred') + 
+  geom_point(aes(size = n, col = future_trend), alpha = 0.5) +
+  geom_text_repel( 
+    data =uni_sim %>% slice_max(order_by = n, n = 5) %>% filter(AU_UN != paste(var_inst, var_dept)), # Filter data first
+    aes(label = AU_UN),
+    box.padding = 1, max.overlaps = Inf) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = 'snow3') +
+  scale_colour_gradient(low = "blue", high = "red", name = "Lead-Lag Score") +
+  theme(legend.position = 'bottom') +
+  labs(x = 'Similarity to past',
+       y = 'Similarity to future',
+       title = paste('Field Lead-Lag Analysis:', var_inst, 'Dept.', var_dept, sep = ' '),
+       subtitle = paste('Timeframe:', PY_min, '-', PY_max , sep = ' '),
+       caption = 'x and y axis')
+# + lims(x = c(0.625, 0.725), y = c(0.625, 0.725))
+```
+
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
 <!-- ############################# NEXT PART ############################################### -->
 <!-- ####################################################################################### -->
 <!-- ####################################################################################### -->
-
 
 # Collaboration 
 
@@ -642,8 +676,8 @@ data %>%
   filter(type == 'Article') %>%
   mutate(journal_title = journal_title %>% str_replace_all("[^[:alnum:]]", " ") ) %>%
   count(journal_title, sort = TRUE) %>%
-    #kable(format = 'latex', booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht')
-    kable(booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht') 
+    kable(format = 'latex', booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht')
+    #kable(booktabs = TRUE, caption = "Outlet of unmatched journal publication", position = '!ht') 
 }
 ```
 
