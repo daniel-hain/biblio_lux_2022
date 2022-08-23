@@ -722,12 +722,6 @@ uni_sim %>%
 ```
 
 
-
-
-# Endnotes
-
-All results are preliminary so far...
-
 ```{r}
 # After knitted do this
 #file.rename(from = "92_descriptives_mapping.nb.html", to = paste0('../output/field_mapping/field_mapping_', str_to_lower(var_inst), '_', str_to_lower(var_dept), '.html'))

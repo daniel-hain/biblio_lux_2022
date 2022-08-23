@@ -43,7 +43,7 @@ select_dept <- read_csv2('../data/names_inst_dept.csv')
 rm(list=setdiff(ls(), "select_dept"))
 
 # Select institute
-select_inst <- select_dept %>% distinct(institute) %>% filter(!(institute %in% c('LIST') ))
+select_inst <- select_dept %>% distinct(institute) %>% filter(!(institute %in% c('XXX') ))
 
 for(k in 1:nrow(select_inst)){
   var_inst <- select_inst[k, 'institute']
@@ -151,7 +151,8 @@ for(k in 1:nrow(select_dept)){
   rmarkdown::render("R/93_descriptives_mapping_dept.Rmd", quiet = TRUE, params = list(
     institute = select_dept[k, 'institute'] %>% pull(),
     department = select_dept[k, 'department'] %>% pull()),
-    output_file = paste0('../output/field_mapping/field_mapping_dept_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
+    output_file = paste0('../../deliveries/field_mapping/field_mapping_dept_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.pdf'))
+    #output_file = paste0('../output/field_mapping/field_mapping_dept_', str_to_lower(select_dept[k, 'institute']), '_', str_to_lower(select_dept[k, 'department']), '.html'))
   print(paste0('=======> Finished Processing ', k, '-', nrow(select_dept), ': ', select_dept[k, 'institute'], ' ',select_dept[k, 'department']))
 }
 
